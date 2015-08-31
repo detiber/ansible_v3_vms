@@ -1,0 +1,89 @@
+---
+- name: Stop the snapshot hosts and launch the base image host
+  hosts: localhost
+  connection: local
+  sudo: yes
+  tags:
+  - switch_to_base
+  gather_facts: no
+
+  tasks:
+  - name: Shutdown existing VMs
+    virt:
+      name: "{{ item }}"
+      state: destroyed
+      uri: qemu:///system
+    with_items: groups.osev3
+
+  - name: Remove vm logical volumes
+    lvol:
+      vg: fedora
+      lv: "{{ item }}"
+      state: absent
+      force: yes
+    with_items: groups.osev3
+
+  - pause: minutes=1
+
+  - name: launch the base ami
+    virt:
+      name: "{{ item }}"
+      state: running
+      uri: qemu:///system
+    with_items: groups.base
+
+  - name: Wait for hosts to be available
+    wait_for: port=22 host={{ item }}
+    with_items: groups.base
+
+- name: Update the base host
+  hosts: base
+  tags:
+  - update
+  tasks:
+  - copy:
+      src: "{{ item }}"
+      dest: /etc/yum.repos.d/{{ item }}
+    with_items:
+    - rhel7.repo
+    - rhel7_extras.repo
+    - rhel7_ha.repo
+  - command: yum clean all
+  - yum:
+      name: "*"
+      state: latest
+  - command: "rm -rf /var/lib/docker/*"
+  - pause:
+      prompt: Verify the base host is in a good state and survives a reboot before continuing.
+
+- name: Stop the base image host and recreate the snapshot hosts
+  hosts: localhost
+  connection: local
+  sudo: yes
+  gather_facts: no
+  tags:
+  - switch_to_snaps
+  tasks:
+  - name: Stop the base image host
+    virt:
+      name: "{{ item }}"
+      state: destroyed
+      uri: qemu:///system
+    with_items: groups.base
+  - pause:
+      minutes: 1
+
+  - name: Recreate vm logical volumes
+    command: /sbin/lvcreate -s /dev/fedora/ansible-base-el7 -L 10G -n {{ item }}
+    with_items: groups.osev3
+
+  - name: Re-launch vms
+    virt:
+      name: "{{ item }}"
+      state: running
+      uri: qemu:///system
+    with_items: groups.osev3
+
+  - name: Wait for hosts to be available
+    wait_for: port=22 host={{ item }}
+    with_items: groups.osev3
