@@ -48,6 +48,7 @@
     - rhel7.repo
     - rhel7_extras.repo
     - rhel7_ha.repo
+    - rhel7_ceph_tools.repo
   - command: yum clean all
   - yum:
       name: "*"
