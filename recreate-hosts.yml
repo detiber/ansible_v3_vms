@@ -20,7 +20,6 @@
       state: absent
       force: yes
     with_items: groups.osev3
-  - pause:
 
   - name: Recreate vm logical volumes
     command: /sbin/lvcreate -s /dev/fedora/ansible-base-el7 -L 10G -n {{ item }}
