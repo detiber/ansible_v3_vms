@@ -25,6 +25,12 @@
 
   - pause: minutes=1
 
+  - name: Make the base volume read/write
+    command: /sbin/lvchange -a y fedora/ansible-base-el7
+
+  - name: Make the base volume r/w
+    command: /sbin/lvchange -p rw fedora/ansible-base-el7
+
   - name: launch the base ami
     virt:
       name: "{{ item }}"
@@ -74,8 +80,14 @@
   - pause:
       minutes: 1
 
+  - name: Make the base volume r/o
+    command: /sbin/lvchange -p r fedora/ansible-base-el7
+
+  - name: Make the base volume inactive
+    command: /sbin/lvchange -a n fedora/ansible-base-el7
+
   - name: Recreate vm logical volumes
-    command: /sbin/lvcreate -s /dev/fedora/ansible-base-el7 -L 10G -n {{ item }}
+    command: /sbin/lvcreate -s --thinpool fedora/pool00 ansible-base-el7 -n {{ item }}
     with_items: groups.osev3
 
   - name: Re-launch vms

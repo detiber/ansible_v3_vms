@@ -22,7 +22,7 @@
     with_items: groups.osev3
 
   - name: Recreate vm logical volumes
-    command: /sbin/lvcreate -s /dev/fedora/ansible-base-el7 -L 10G -n {{ item }}
+    command: /sbin/lvcreate -s --thinpool fedora/pool00 ansible-base-el7 -n {{ item }}
     with_items: groups.osev3
 
   - name: Re-launch vms
@@ -61,3 +61,11 @@
       name: "*"
       state: latest
 
+  - name: Cleanup cached facts and files
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+    - /tmp/ansible/facts
+    - /home/jdetiber/.ansible/cp
+    - /home/jdetiber/.ansible/tmp

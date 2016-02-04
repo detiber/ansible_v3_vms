@@ -15,9 +15,5 @@ ose3-node1-ansible
 ose3-node2-ansible
 
 [etcd]
-ose3-etcd1-ansible
-ose3-etcd2-ansible
-ose3-etcd3-ansible
 
 [lb]
-#ose3-lb-ansible
