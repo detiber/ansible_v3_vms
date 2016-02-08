@@ -1,3 +1,4 @@
+#! ansible-playbook -K
 ---
 - name: Recreate environment
   hosts: localhost
@@ -51,12 +52,12 @@
     with_items:
     - rhel7.repo
     - rhel7_extras.repo
-    - rhel7_ha.repo
-    - rhel7_ceph_tools.repo
+#    - rhel7_ha.repo
+#    - rhel7_ceph_tools.repo
   - command: yum clean all
-  - yum:
-      name: libertas-sd8787-firmware-20140804-0.1.git6bce2b0.el7_0.noarch
-      state: absent
+#  - yum:
+#      name: libertas-sd8787-firmware-20140804-0.1.git6bce2b0.el7_0.noarch
+#      state: absent
   - yum:
       name: "*"
       state: latest

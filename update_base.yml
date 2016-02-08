@@ -1,10 +1,10 @@
+#! ansible-playbook -K
 ---
 - name: Stop the snapshot hosts and launch the base image host
   hosts: localhost
   connection: local
+  tags: prep
   sudo: yes
-  tags:
-  - switch_to_base
   gather_facts: no
 
   tasks:
@@ -23,13 +23,7 @@
       force: yes
     with_items: groups.osev3
 
-  - pause: minutes=1
-
-  - name: Make the base volume read/write
-    command: /sbin/lvchange -a y fedora/ansible-base-el7
-
-  - name: Make the base volume r/w
-    command: /sbin/lvchange -p rw fedora/ansible-base-el7
+#  - pause: minutes=1
 
   - name: launch the base ami
     virt:
@@ -59,7 +53,10 @@
   - yum:
       name: "*"
       state: latest
-  - command: "rm -rf /var/lib/docker/*"
+#  - command: "rm -rf /var/lib/docker/*"
+  - command: yum clean all
+  - command: rm -rf /var/log/yum.log
+  - command: "rm -rf /etc/yum.repos.d/rhel*"
   - pause:
       prompt: Verify the base host is in a good state and survives a reboot before continuing.
 
@@ -69,7 +66,7 @@
   sudo: yes
   gather_facts: no
   tags:
-  - switch_to_snaps
+  - post
   tasks:
   - name: Stop the base image host
     virt:
@@ -77,17 +74,15 @@
       state: destroyed
       uri: qemu:///system
     with_items: groups.base
-  - pause:
-      minutes: 1
 
-  - name: Make the base volume r/o
-    command: /sbin/lvchange -p r fedora/ansible-base-el7
-
-  - name: Make the base volume inactive
-    command: /sbin/lvchange -a n fedora/ansible-base-el7
+  - pause: minutes=1
 
   - name: Recreate vm logical volumes
-    command: /sbin/lvcreate -s --thinpool fedora/pool00 ansible-base-el7 -n {{ item }}
+    command: /sbin/lvcreate -s fedora/ose3-base-ansible -n {{ item }}
+    with_items: groups.osev3
+
+  - name: Recreate vm logical volumes
+    command:  lvchange -ay -K fedora/{{ item }}
     with_items: groups.osev3
 
   - name: Re-launch vms
