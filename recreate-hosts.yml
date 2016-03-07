@@ -23,7 +23,11 @@
     with_items: groups.osev3
 
   - name: Recreate vm logical volumes
-    command: /sbin/lvcreate -s --thinpool fedora/pool00 ansible-base-el7 -n {{ item }}
+    command: /sbin/lvcreate -s fedora/ose3-base-ansible -n {{ item }}
+    with_items: groups.osev3
+
+  - name: Enable the vm logical volumes
+    command:  lvchange -ay -K fedora/{{ item }}
     with_items: groups.osev3
 
   - name: Re-launch vms
@@ -44,8 +48,8 @@
   tags:
   - bootstrap
   tasks:
-  - name: Extend lvm volume on vms
-    command: lvextend -L +10G -r rhel_base/root
+    #  - name: Extend lvm volume on vms
+    #command: lvextend -L 10G -r rhel_base/root
   - copy:
       src: "{{ item }}"
       dest: /etc/yum.repos.d/{{ item }}

@@ -81,7 +81,7 @@
     command: /sbin/lvcreate -s fedora/ose3-base-ansible -n {{ item }}
     with_items: groups.osev3
 
-  - name: Recreate vm logical volumes
+  - name: Enable the vm logical volumes
     command:  lvchange -ay -K fedora/{{ item }}
     with_items: groups.osev3
 
