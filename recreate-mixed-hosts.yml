@@ -125,7 +125,9 @@
     - create
 
   - name: Create the cloud-init iso image
-    command: genisoimage -output generated_files/{{ item }}-cloud-init.iso -volid cloud-init -joliet -rock generated_files/{{ item }}/user-data generated_files/{{ item }}/meta-data
+    command: genisoimage -output ../{{ item }}-cloud-init.iso -volid cloud-init -joliet -rock user-data meta-data
+    args:
+      chdir: generated_files/{{ item }}
     with_items: groups.atomic
     tags:
     - create

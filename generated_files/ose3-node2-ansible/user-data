@@ -1,9 +1,0 @@
-#cloud-config
-chpasswd: 
-  list: |
-    root:atomic
-    cloud-user:atomic
-  expire: False
-ssh_pwauth: True
-ssh_authorized_keys:
-- ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCouXX4oU4Onb8wjU1qLw4abMfm2F3Wso4tNHM60CG2LN3bZ4uGpvCsoPDGLnFr0JygPhbqktdc0YrlGj5bGyGVJMi5S+/3vTHgjLU49JIZgvuzmTgqriXNN9c2vuJe38RO2aw/+ihwp5155DqHUKqFebZjWlkSz0mcm0OsP0whP8WNatIA9SrlqWkijxtk5xRpJLhBl14QuKzpH6dt2Nu7evH3irkx7tUsVJ9xvWIoQGuEnNQGPdu6mnlcBmve0+d4PuUP0YzFO+/WWt2Du73FKgBrcdYNSAkCeXP2s4m70tl08XqMk4Is3Pa5r6SzlIASzD4ofjxDCZL1u93vq3jN jdetiber@detiber
