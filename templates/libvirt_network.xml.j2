@@ -1,0 +1,28 @@
+<network>
+  <name>openshift</name>
+  <forward mode='nat'>
+    <nat>
+      <port start='1024' end='65535'/>
+    </nat>
+  </forward>
+  <bridge name='{{ bridge_name }}' stp='on' delay='0'/>
+  <domain name='{{ domain_name }}'/>
+  <dns>
+{% for host in groups.vm_hosts %}
+    <host ip='{{ hostvars[host].ip_address }}'>
+      <hostname>{{ host }}.{{ domain_name }}</hostname>
+{% for alias in hostvars[host].aliases %}
+      <hostname>{{ alias }}.{{ domain_name }}</hostname>
+{% endfor %}
+    </host>
+{% endfor %}
+  </dns>
+  <ip address='192.168.133.1' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='192.168.133.2' end='192.168.133.254'/>
+{% for host in groups.vm_hosts %}
+      <host mac='{{ hostvars[host].mac_address }}' name='{{ host }}.{{ domain_name }}' ip='{{ hostvars[host].ip_address }}'/>
+{% endfor %}
+    </dhcp>
+  </ip>
+</network>

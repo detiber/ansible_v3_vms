@@ -1,0 +1,228 @@
+#! ansible-playbook -K
+---
+- name: Recreate environment
+  hosts: localhost
+  connection: local
+  sudo: yes
+  gather_facts: no
+  vars:
+    qemu_uri: qemu:///system
+    domain_name: test.example.com
+    bridge_name: virbr1
+    volume_group: fedora
+    add_cloud_init_drive: yes
+    ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+  tasks:
+  - name: Shutdown existing VMs
+    virt:
+      name: "{{ item }}"
+      state: destroyed
+      uri: "{{ qemu_uri }}"
+    with_items: groups.osev3
+    register: output
+    failed_when: false
+    tags:
+    - teardown
+
+  - name: Undefine the existing VMs
+    virt:
+      name: "{{ item }}"
+      command: undefine
+      uri: "{{ qemu_uri }}"
+    with_items: groups.osev3
+    failed_when: false
+    tags:
+    - teardown
+
+  - name: Stop the VM network
+    command: virsh net-destroy openshift
+    failed_when: false
+    tags:
+    - teardown
+
+  - name: Undefine the VM network
+    command: virsh net-undefine openshift
+    failed_when: false
+    tags:
+    - teardown
+
+  - name: Remove vm logical volumes
+    lvol:
+      vg: "{{ volume_group }}"
+      lv: "{{ item }}"
+      state: absent
+      force: yes
+    with_items: groups.osev3
+    tags:
+    - teardown
+
+  - name: Create temporary directories
+    file:
+      path: generated_files
+      state: directory
+      mode: 0770
+      group: qemu
+    tags:
+    - create
+
+  - name: Create the network definition
+    template:
+      src: templates/libvirt_network.xml.j2
+      dest: generated_files/libvirt_network.xml
+    tags:
+    - create
+
+  - name: Update the network definition
+    command: virsh net-define {{ playbook_dir }}/generated_files/libvirt_network.xml
+    tags:
+    - create
+
+  - name: Set the network to autostart
+    command: virsh net-autostart openshift
+    tags:
+    - create
+
+  - name: Start the network
+    command: virsh net-start openshift
+    tags:
+    - create
+
+  - name: Recreate rhel7 vm logical volumes
+    command: /sbin/lvcreate -s {{ volume_group }}/{{ hostvars[item].base_image }} -n {{ item }}
+    with_items: groups.mixed
+    tags:
+    - create
+
+  - name: Enable the vm logical volumes
+    command: lvchange -ay -K {{ volume_group }}/{{ item }}
+    with_items: groups.osev3
+    tags:
+    - create
+
+  - name: Create temporary directories
+    file:
+      path: generated_files/{{ item }}
+      state: directory
+      mode: 0700
+    with_items: groups.atomic
+    tags:
+    - create
+
+  - name: Create the user-data template
+    template:
+      src: templates/user-data.j2
+      dest: generated_files/{{ item }}/user-data
+    with_items: groups.atomic
+    tags:
+    - create
+
+  - name: Create the meta-data template
+    template:
+      src: templates/meta-data.j2
+      dest: generated_files/{{ item }}/meta-data
+    with_items: groups.atomic
+    tags:
+    - create
+
+  - name: Create the cloud-init iso image
+    command: genisoimage -output generated_files/{{ item }}-cloud-init.iso -volid cloud-init -joliet -rock generated_files/{{ item }}/user-data generated_files/{{ item }}/meta-data
+    with_items: groups.atomic
+    tags:
+    - create
+
+  - name: Upload the volume to the default storage pool
+    command: virsh vol-upload {{ item }}-cloud-init.iso generated_files/{{ item }}-cloud-init.iso --pool default
+    with_items: groups.atomic
+    tags:
+    - create
+
+  - name: Create the VMs
+    virt:
+      name: "{{ item }}"
+      command: define
+      xml: "{{ lookup('template', 'templates/libvirt_domain.xml.j2') }}"
+      uri: "{{ qemu_uri }}"
+    with_items: groups.osev3
+    tags:
+    - create
+
+  - name: Start the VMs
+    virt:
+      name: "{{ item }}"
+      state: running
+      uri: "{{ qemu_uri }}"
+    with_items: groups.osev3
+    tags:
+    - create
+
+  - name: Wait for hosts to be available
+    wait_for: port=22 host={{ item }}
+    with_items: groups.osev3
+    tags:
+    - create
+
+- name: Bootstrap rhel7 hosts
+  hosts: rhel7
+  remote_user: root
+  become: no
+  tags:
+  - bootstrap
+  tasks:
+  - copy:
+      src: "{{ item }}"
+      dest: /etc/yum.repos.d/{{ item }}
+    with_items:
+    - rhel7.repo
+    - rhel7_extras.repo
+  - command: yum clean all
+  - yum:
+      name: "*"
+      state: latest
+
+- name: Bootstrap atomic hosts
+  hosts: atomic
+  remote_user: root
+  become: no
+  tags:
+  - bootstrap
+  tasks:
+  - copy:
+      src: "{{ item }}"
+      dest: /etc/yum.repos.d/{{ item }}
+    with_items:
+    - rhel7.repo
+    - rhel7_extras.repo
+  - command: atomic host upgradea
+
+- name: Restart systems
+  hosts: osev3
+  tasks:
+  - name: Restart system
+    # https://github.com/ansible/ansible/issues/10616
+    shell: sleep 2 && shutdown -r now
+    async: 1
+    poll: 0
+    ignore_errors: true
+
+  - name: Wait for master to start
+    become: no
+    local_action:
+      module: wait_for
+      host: "{{ inventory_hostname }}"
+      state: started
+      delay: 10
+      port: 22
+
+- hosts: localhost
+  connection: local
+  sudo: yes
+  gather_facts: no
+  tasks:
+  - name: Cleanup cached facts and files
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+    - /tmp/ansible/facts
+    - /home/jdetiber/.ansible/cp
+    - /home/jdetiber/.ansible/tmp
