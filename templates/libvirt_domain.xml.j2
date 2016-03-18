@@ -1,7 +1,6 @@
 <domain type='kvm'>
   <name>{{ item }}</name>
   <memory unit='GiB'>1</memory>
-  <currentMemory unit='MiB'>512</currentMemory>
   <vcpu>1</vcpu>
   <os>
     <type arch='x86_64'>hvm</type>
@@ -31,9 +30,6 @@
     </disk>
     <disk type='volume' device='cdrom'>
       <driver name='qemu' type='raw'/>
-{% if add_cloud_init_drive | bool and item in groups.atomic %}
-      <source pool='default' volume='{{ item }}-cloud-init.iso'/>
-{% endif %}
       <target dev='hda' bus='ide'/>
       <readonly/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>

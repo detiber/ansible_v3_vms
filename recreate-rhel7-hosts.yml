@@ -24,6 +24,7 @@
     failed_when: false
     tags:
     - teardown
+    - machines
 
   - name: Undefine the existing VMs
     virt:
@@ -34,18 +35,21 @@
     failed_when: false
     tags:
     - teardown
+    - machines
 
   - name: Stop the VM network
     command: virsh net-destroy openshift
     failed_when: false
     tags:
     - teardown
+    - network
 
   - name: Undefine the VM network
     command: virsh net-undefine openshift
     failed_when: false
     tags:
     - teardown
+    - network
 
   - name: Remove vm logical volumes
     lvol:
@@ -56,6 +60,7 @@
     with_items: groups.osev3
     tags:
     - teardown
+    - volumes
 
   - name: Create temporary directories
     file:
@@ -65,6 +70,7 @@
       group: qemu
     tags:
     - create
+    - network
 
   - name: Create the network definition
     template:
@@ -72,33 +78,40 @@
       dest: generated_files/libvirt_network.xml
     tags:
     - create
+    - network
+
 
   - name: Update the network definition
     command: virsh net-define {{ playbook_dir }}/generated_files/libvirt_network.xml
     tags:
     - create
+    - network
 
   - name: Set the network to autostart
     command: virsh net-autostart openshift
     tags:
     - create
+    - network
 
   - name: Start the network
     command: virsh net-start openshift
     tags:
     - create
+    - network
 
   - name: Recreate rhel7 vm logical volumes
     command: /sbin/lvcreate -s {{ volume_group }}/{{ base_image }} -n {{ item }}
     with_items: groups.rhel7_only
     tags:
     - create
+    - volumes
 
   - name: Enable the vm logical volumes
     command: lvchange -ay -K {{ volume_group }}/{{ item }}
     with_items: groups.osev3
     tags:
     - create
+    - volumes
 
   - name: Create the VMs
     virt:
@@ -109,6 +122,7 @@
     with_items: groups.osev3
     tags:
     - create
+    - machines
 
   - name: Start the VMs
     virt:
@@ -118,12 +132,14 @@
     with_items: groups.osev3
     tags:
     - create
+    - machines
 
   - name: Wait for hosts to be available
     wait_for: port=22 host={{ item }}
     with_items: groups.osev3
     tags:
     - create
+    - machines
 
 - name: Bootstrap rhel7 hosts
   hosts: rhel7_only

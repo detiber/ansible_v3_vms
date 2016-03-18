@@ -46,6 +46,13 @@
     tags:
     - teardown
 
+  - name: Remove any cloud-init volumes
+    command: virsh vol-delete {{ item }}-cloud-init.iso
+    with_items: groups.osev3
+    failed_when: false
+    tags:
+    - teardown
+
   - name: Remove vm logical volumes
     lvol:
       vg: "{{ volume_group }}"
@@ -99,45 +106,6 @@
     tags:
     - create
 
-  - name: Create temporary directories
-    file:
-      path: generated_files/{{ item }}
-      state: directory
-      mode: 0700
-    with_items: groups.atomic
-    tags:
-    - create
-
-  - name: Create the user-data template
-    template:
-      src: templates/user-data.j2
-      dest: generated_files/{{ item }}/user-data
-    with_items: groups.atomic
-    tags:
-    - create
-
-  - name: Create the meta-data template
-    template:
-      src: templates/meta-data.j2
-      dest: generated_files/{{ item }}/meta-data
-    with_items: groups.atomic
-    tags:
-    - create
-
-  - name: Create the cloud-init iso image
-    command: genisoimage -output ../{{ item }}-cloud-init.iso -volid cloud-init -joliet -rock user-data meta-data
-    args:
-      chdir: generated_files/{{ item }}
-    with_items: groups.atomic
-    tags:
-    - create
-
-  - name: Upload the volume to the default storage pool
-    command: virsh vol-upload {{ item }}-cloud-init.iso generated_files/{{ item }}-cloud-init.iso --pool default
-    with_items: groups.atomic
-    tags:
-    - create
-
   - name: Create the VMs
     virt:
       name: "{{ item }}"
@@ -187,14 +155,11 @@
   become: no
   tags:
   - bootstrap
+  vars:
+    domain_name: test.example.com
   tasks:
-  - copy:
-      src: "{{ item }}"
-      dest: /etc/yum.repos.d/{{ item }}
-    with_items:
-    - rhel7.repo
-    - rhel7_extras.repo
-  - command: atomic host upgradea
+  - command: hostnamectl set-hostname {{ inventory_hostname }}.{{ domain_name }}
+  - command: atomic host upgrade
 
 - name: Restart systems
   hosts: osev3
