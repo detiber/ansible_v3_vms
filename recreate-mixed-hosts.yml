@@ -8,7 +8,7 @@
   vars:
     qemu_uri: qemu:///system
     domain_name: test.example.com
-    bridge_name: virbr1
+    bridge_name: virbr2
     volume_group: fedora
     add_cloud_init_drive: yes
     ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"

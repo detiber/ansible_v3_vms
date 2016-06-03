@@ -3,12 +3,12 @@
 - name: Recreate environment
   hosts: localhost
   connection: local
-  sudo: yes
+  become: yes
   gather_facts: no
   vars:
     qemu_uri: qemu:///system
     domain_name: test.example.com
-    bridge_name: virbr1
+    bridge_name: virbr2
     volume_group: fedora
     add_cloud_init_drive: no
     ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
@@ -19,7 +19,7 @@
       name: "{{ item }}"
       state: destroyed
       uri: "{{ qemu_uri }}"
-    with_items: groups.osev3
+    with_items: "{{ groups.osev3 }}"
     register: output
     failed_when: false
     tags:
@@ -31,7 +31,7 @@
       name: "{{ item }}"
       command: undefine
       uri: "{{ qemu_uri }}"
-    with_items: groups.osev3
+    with_items: "{{ groups.osev3 }}"
     failed_when: false
     tags:
     - teardown
@@ -57,7 +57,7 @@
       lv: "{{ item }}"
       state: absent
       force: yes
-    with_items: groups.osev3
+    with_items: "{{ groups.osev3 }}"
     tags:
     - teardown
     - volumes
@@ -101,14 +101,14 @@
 
   - name: Recreate rhel7 vm logical volumes
     command: /sbin/lvcreate -s {{ volume_group }}/{{ base_image }} -n {{ item }}
-    with_items: groups.rhel7_only
+    with_items: "{{ groups.rhel7_only }}"
     tags:
     - create
     - volumes
 
   - name: Enable the vm logical volumes
     command: lvchange -ay -K {{ volume_group }}/{{ item }}
-    with_items: groups.osev3
+    with_items: "{{ groups.osev3 }}"
     tags:
     - create
     - volumes
@@ -119,7 +119,7 @@
       command: define
       xml: "{{ lookup('template', 'templates/libvirt_domain.xml.j2') }}"
       uri: "{{ qemu_uri }}"
-    with_items: groups.osev3
+    with_items: "{{ groups.osev3 }}"
     tags:
     - create
     - machines
@@ -129,14 +129,14 @@
       name: "{{ item }}"
       state: running
       uri: "{{ qemu_uri }}"
-    with_items: groups.osev3
+    with_items: "{{ groups.osev3 }}"
     tags:
     - create
     - machines
 
   - name: Wait for hosts to be available
     wait_for: port=22 host={{ item }}
-    with_items: groups.osev3
+    with_items: "{{ groups.osev3 }}"
     tags:
     - create
     - machines
@@ -180,7 +180,7 @@
 
 - hosts: localhost
   connection: local
-  sudo: yes
+  become: yes
   gather_facts: no
   tasks:
   - name: Cleanup cached facts and files
