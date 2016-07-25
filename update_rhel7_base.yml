@@ -14,6 +14,7 @@
       state: destroyed
       uri: qemu:///system
     with_items: groups.osev3
+    failed_when: false
 
   - name: Remove vm logical volumes
     lvol:
@@ -22,6 +23,7 @@
       state: absent
       force: yes
     with_items: groups.osev3
+    failed_when: false
 
 #  - pause: minutes=1
 
