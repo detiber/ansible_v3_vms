@@ -1,6 +1,0 @@
-# Created by cloud-init on Sat, 04 Apr 2015 04:08:35 +0000
-[rhel7-ceph-tools]
-gpgcheck = 0
-enabled = 1
-baseurl = http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel/server/7/7Server/x86_64/ceph-tools/1.3/os/
-name = RHEL 7 Ceph Tools

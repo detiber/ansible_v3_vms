@@ -2,4 +2,4 @@
 mac_address: '52:54:00:c4:4e:1d'
 ip_address: 192.168.133.12
 aliases:
-- ose3-master-ansible
+- master

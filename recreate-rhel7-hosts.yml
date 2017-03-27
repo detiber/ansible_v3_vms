@@ -6,13 +6,9 @@
   become: yes
   gather_facts: no
   vars:
-    qemu_uri: qemu:///system
-    domain_name: test.example.com
-    bridge_name: virbr2
-    volume_group: fedora
     add_cloud_init_drive: no
     ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-    base_image: ose3-base-ansible
+    base_image: rhel7-base
   tasks:
   - name: Shutdown existing VMs
     virt:
@@ -72,6 +68,14 @@
     - create
     - network
 
+#  Requires Ansible 2.3
+#  - name: Create temporary directories
+#    tempfile:
+#      state: directory
+#    tags:
+#    - create
+#    - network
+#
   - name: Create the network definition
     template:
       src: templates/libvirt_network.xml.j2
@@ -135,7 +139,7 @@
     - machines
 
   - name: Wait for hosts to be available
-    wait_for: port=22 host={{ item }}
+    wait_for: port=22 host={{ item }}.{{ domain_name }}
     with_items: "{{ groups.osev3 }}"
     tags:
     - create
@@ -169,11 +173,11 @@
     poll: 0
     ignore_errors: true
 
-  - name: Wait for master to start
+  - name: Wait for host to start
     become: no
     local_action:
       module: wait_for
-      host: "{{ inventory_hostname }}"
+      host: "{{ inventory_hostname }}.{{ domain_name }}"
       state: started
       delay: 10
       port: 22

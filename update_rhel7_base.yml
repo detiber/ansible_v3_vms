@@ -12,8 +12,8 @@
     virt:
       name: "{{ item }}"
       state: destroyed
-      uri: qemu:///system
-    with_items: groups.osev3
+      uri: "{{ qemu_uri }}"
+    with_items: "{{ groups.osev3 }}"
     failed_when: false
 
   - name: Remove vm logical volumes
@@ -22,7 +22,7 @@
       lv: "{{ item }}"
       state: absent
       force: yes
-    with_items: groups.osev3
+    with_items: "{{ groups.osev3 }}"
     failed_when: false
 
 #  - pause: minutes=1
@@ -31,12 +31,12 @@
     virt:
       name: "{{ item }}"
       state: running
-      uri: qemu:///system
-    with_items: groups.base
+      uri: "{{ qemu_uri }}"
+    with_items: "{{ groups.base }}"
 
   - name: Wait for hosts to be available
-    wait_for: port=22 host={{ item }}
-    with_items: groups.base
+    wait_for: port=22 host={{ item }}.{{ domain_name }}
+    with_items: "{{ groups.base }}"
 
 - name: Update the base host
   hosts: base
@@ -49,16 +49,12 @@
     with_items:
     - rhel7.repo
     - rhel7_extras.repo
-    - rhel7_ha.repo
-    - rhel7_ceph_tools.repo
   - command: yum clean all
   - yum:
       name: "*"
       state: latest
-#  - command: "rm -rf /var/lib/docker/*"
   - command: yum clean all
   - command: rm -rf /var/log/yum.log
-  - command: "rm -rf /etc/yum.repos.d/rhel*"
   - pause:
       prompt: Verify the base host is in a good state and survives a reboot before continuing.
 
@@ -74,26 +70,26 @@
     virt:
       name: "{{ item }}"
       state: destroyed
-      uri: qemu:///system
-    with_items: groups.base
+      uri: "{{ qemu_uri }}"
+    with_items: "{{ groups.base }}"
 
   - pause: minutes=1
 
   - name: Recreate vm logical volumes
-    command: /sbin/lvcreate -s fedora/ose3-base-ansible -n {{ item }}
+    command: /sbin/lvcreate -s {{ volume_group }}/{{ base_image }} -n {{ item }}
     with_items: groups.osev3
 
   - name: Enable the vm logical volumes
-    command:  lvchange -ay -K fedora/{{ item }}
-    with_items: groups.osev3
+    command:  lvchange -ay -K {{ volume_group }}/{{ item }}
+    with_items: "{{ groups.osev3 }}"
 
   - name: Re-launch vms
     virt:
       name: "{{ item }}"
       state: running
-      uri: qemu:///system
-    with_items: groups.osev3
+      uri: "{{ qemu_uri }}"
+    with_items: "{{ groups.osev3 }}"
 
   - name: Wait for hosts to be available
-    wait_for: port=22 host={{ item }}
-    with_items: groups.osev3
+    wait_for: port=22 host={{ item }}.{{ domain_name }}
+    with_items: "{{ groups.osev3 }}"

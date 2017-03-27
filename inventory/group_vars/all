@@ -1,0 +1,5 @@
+qemu_uri: qemu:///system
+domain_name: example.com
+bridge_name: virbr2
+volume_group: fedora_jdetiber
+ansible_ssh_host: "{{ inventory_hostname }}.{{ domain_name }}"

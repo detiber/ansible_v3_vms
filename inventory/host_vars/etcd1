@@ -2,4 +2,4 @@
 mac_address: '52:54:00:c4:4e:10'
 ip_address: 192.168.133.17
 aliases:
-- ose3-etcd-ansible
+- etcd

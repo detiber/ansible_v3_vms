@@ -6,7 +6,7 @@
     </nat>
   </forward>
   <bridge name='{{ bridge_name }}' stp='on' delay='0'/>
-  <domain name='{{ domain_name }}'/>
+  <domain name='{{ domain_name }}' localOnly='yes'/>
   <dns>
 {% for host in groups.vm_hosts %}
     <host ip='{{ hostvars[host].ip_address }}'>

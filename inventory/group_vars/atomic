@@ -1,2 +1,2 @@
 ---
-base_image: ose3-atomic-base-ansible
+base_image: rhel7-atomic-base
