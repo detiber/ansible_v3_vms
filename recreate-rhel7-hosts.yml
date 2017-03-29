@@ -102,7 +102,7 @@
     - machines
 
 - name: Bootstrap rhel7 hosts
-  hosts: rhel7_only
+  hosts: guest_hosts
   remote_user: root
   become: no
   tags:
