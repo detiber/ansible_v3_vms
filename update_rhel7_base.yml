@@ -4,7 +4,9 @@
   hosts: localhost
   connection: local
   tags: prep
-  sudo: yes
+  become: yes
+  vars:
+    base_host_name: rhel7-base
   gather_facts: no
 
   tasks:
@@ -13,7 +15,7 @@
       name: "{{ item }}"
       state: destroyed
       uri: "{{ qemu_uri }}"
-    with_items: "{{ groups.osev3 }}"
+    with_items: "{{ groups.all_guests }}"
     failed_when: false
 
   - name: Remove vm logical volumes
@@ -22,24 +24,20 @@
       lv: "{{ item }}"
       state: absent
       force: yes
-    with_items: "{{ groups.osev3 }}"
+    with_items: "{{ groups.all_guests }}"
     failed_when: false
-
-#  - pause: minutes=1
 
   - name: launch the base ami
     virt:
-      name: "{{ item }}"
+      name: "{{ base_host_name }}"
       state: running
       uri: "{{ qemu_uri }}"
-    with_items: "{{ groups.base }}"
 
   - name: Wait for hosts to be available
-    wait_for: port=22 host={{ item }}.{{ domain_name }}
-    with_items: "{{ groups.base }}"
+    wait_for: port=22 host={{ base_host_name }}.{{ domain_name }}
 
 - name: Update the base host
-  hosts: base
+  hosts: rhel7-base
   tags:
   - update
   tasks:
@@ -61,8 +59,10 @@
 - name: Stop the base image host and recreate the snapshot hosts
   hosts: localhost
   connection: local
-  sudo: yes
+  become: yes
   gather_facts: no
+  vars:
+    base_host_name: rhel7-base
   tags:
   - post
   tasks:
@@ -71,25 +71,25 @@
       name: "{{ item }}"
       state: destroyed
       uri: "{{ qemu_uri }}"
-    with_items: "{{ groups.base }}"
+    with_items: "{{ base_host_name }}"
 
   - pause: minutes=1
 
   - name: Recreate vm logical volumes
     command: /sbin/lvcreate -s {{ volume_group }}/{{ base_image }} -n {{ item }}
-    with_items: groups.osev3
+    with_items: groups.guest_hosts
 
   - name: Enable the vm logical volumes
     command:  lvchange -ay -K {{ volume_group }}/{{ item }}
-    with_items: "{{ groups.osev3 }}"
+    with_items: "{{ groups.guest_hosts }}"
 
   - name: Re-launch vms
     virt:
       name: "{{ item }}"
       state: running
       uri: "{{ qemu_uri }}"
-    with_items: "{{ groups.osev3 }}"
+    with_items: "{{ groups.guest_hosts }}"
 
   - name: Wait for hosts to be available
     wait_for: port=22 host={{ item }}.{{ domain_name }}
-    with_items: "{{ groups.osev3 }}"
+    with_items: "{{ groups.guest_hosts }}"

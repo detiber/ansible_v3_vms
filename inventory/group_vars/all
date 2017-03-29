@@ -1,5 +1,13 @@
 qemu_uri: qemu:///system
 domain_name: example.com
-bridge_name: virbr2
+network:
+  name: openshift
+  address: 192.168.133.0
+  gateway: 192.168.133.1
+  netmask: 255.255.255.0
+  dhcp:
+    start: 192.168.133.2
+    end: 192.168.133.254
+  bridge: virbr2
 volume_group: fedora_jdetiber
 ansible_ssh_host: "{{ inventory_hostname }}.{{ domain_name }}"

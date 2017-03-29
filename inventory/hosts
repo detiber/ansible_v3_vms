@@ -1,43 +1,22 @@
-[vm_hosts:children]
-base
-atomic-base
-osev3
-
-[base]
+[base_hosts]
 rhel7-base
-
-[atomic-base]
 rhel7-atomic-base
 
-[osev3:children]
-masters
-nodes
-lb
-etcd
+[all_guests:children]
+guest_hosts
+inactive_guests
 
-[mixed:children]
-atomic
-rhel7
+[guest_hosts:vars]
+#base_image=rhel7-atomic-base
+#add_cloud_init_drive: yes
+base_image=rhel7-base
 
-[rhel7_only:children]
-osev3
+[guest_hosts]
+master tags="['osev3','masters','nodes','etcd']"
+node[1:2] tags="['osev3', 'nodes']"
 
-[atomic:children]
-masters
-nodes
-etcd
-
-[rhel7:children]
-lb
-
-[masters]
-master1
-#master[1:3]
-
-[nodes]
-node[1:2]
-
-[etcd]
-
-[lb]
-#lb
+[inactive_guests]
+etcd[1:3]
+lb base_image=rhel7-base aliases=['openshift']
+master[1:3]
+nfs atomic=False base_host=rhel7_base
