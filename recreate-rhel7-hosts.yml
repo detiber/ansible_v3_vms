@@ -83,7 +83,6 @@
     - create
     - machines
 
-
   - name: Start the VMs
     virt:
       name: "{{ item }}"

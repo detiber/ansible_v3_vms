@@ -20,7 +20,7 @@
 
   - name: Remove vm logical volumes
     lvol:
-      vg: fedora
+      vg: "{{ volume_group }}"
       lv: "{{ item }}"
       state: absent
       force: yes
@@ -76,11 +76,16 @@
   - pause: minutes=1
 
   - name: Recreate vm logical volumes
-    command: /sbin/lvcreate -s {{ volume_group }}/{{ base_image }} -n {{ item }}
-    with_items: groups.guest_hosts
+    command: /sbin/lvcreate -s {{ volume_group }}/{{ hostvars[item].base_image }} -n {{ item }}
+    with_items: "{{ groups.guest_hosts }}"
 
   - name: Enable the vm logical volumes
     command:  lvchange -ay -K {{ volume_group }}/{{ item }}
+    with_items: "{{ groups.guest_hosts }}"
+
+  - name: Update the hostname for the VM
+    command: >
+      virt-edit -c {{ qemu_uri }} -d {{ item }} -e 's/^.*$/{{ item }}.{{ domain_name }}/' /etc/hostname
     with_items: "{{ groups.guest_hosts }}"
 
   - name: Re-launch vms
