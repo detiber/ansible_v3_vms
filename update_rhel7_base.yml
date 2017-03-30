@@ -55,6 +55,8 @@
   - command: rm -rf /var/log/yum.log
   - pause:
       prompt: Verify the base host is in a good state and survives a reboot before continuing.
+  - command: fstrim -a --verbose
+
 
 - name: Stop the base image host and recreate the snapshot hosts
   hosts: localhost
