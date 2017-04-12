@@ -1,5 +1,5 @@
 qemu_uri: qemu:///system
-domain_name: example.com
+domain_name: ose.example.com
 network:
   name: openshift
   address: 192.168.133.0

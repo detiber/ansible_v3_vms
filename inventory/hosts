@@ -13,10 +13,10 @@ base_image=rhel7-base
 
 [guest_hosts]
 master tags="['osev3','masters','nodes','etcd']"
-node[1:2] tags="['osev3', 'nodes']"
 
 [inactive_guests]
 etcd[1:3]
 lb base_image=rhel7-base aliases=['openshift']
 master[1:3]
 nfs atomic=False base_host=rhel7_base
+node[1:2] tags="['osev3', 'nodes']"
