@@ -40,6 +40,5 @@
       lvol:
         lv: "{{ virt_thin_pool }}"
         vg: "{{ volume_group }}"
-        size: 25G
         state: present
-        opts: -T -n "{{ base_host_name }}"
+        opts: -T -n "{{ base_host_name }}" -V25G
