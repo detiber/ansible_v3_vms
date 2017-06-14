@@ -7,7 +7,6 @@
   become: yes
   vars:
     base_host_name: rhel7-base
-  gather_facts: no
 
   tasks:
   - package:
