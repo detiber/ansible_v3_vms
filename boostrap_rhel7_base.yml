@@ -1,0 +1,19 @@
+#! ansible-playbook -K
+---
+- name: Bootstrap the base image
+  hosts: localhost
+  connection: local
+  tags: prep
+  become: yes
+  vars:
+    base_host_name: rhel7-base
+  gather_facts: no
+
+  tasks:
+  - name: Get list of VMs
+    virt:
+      command: list_vms
+      uri: "{{ qemu_uri }}"
+    register: vm_list
+
+  - debug: var=vm_list
