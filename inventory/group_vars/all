@@ -10,4 +10,6 @@ network:
     end: 192.168.133.254
   bridge: virbr2
 volume_group: rhel_ibm-p8-cluster-02
+virt_thin_pool: libvirt-pool
+base_host_name: rhel7-base
 ansible_ssh_host: "{{ inventory_hostname }}.{{ domain_name }}"

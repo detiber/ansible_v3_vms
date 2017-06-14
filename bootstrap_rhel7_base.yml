@@ -3,11 +3,7 @@
 - name: Bootstrap the base image
   hosts: localhost
   connection: local
-  tags: prep
   become: yes
-  vars:
-    base_host_name: rhel7-base
-
   tasks:
   - name: Ensure libvirt packages are installed
     package:
@@ -30,4 +26,12 @@
       uri: "{{ qemu_uri }}"
     register: vm_list
 
-  - debug: var=vm_list
+  - when: base_host_name not in vm_list.list_vms
+    block:
+    - name: Ensure the thin pool is present
+      lvol:
+        lv: "{{ virt_thin_pool }}"
+        vg: "{{ volume_group }}"
+        size: 150G
+        state: present
+        opts: -T
