@@ -10,6 +10,9 @@
   gather_facts: no
 
   tasks:
+  - package:
+      name: libvirt-python
+      state: present
   - name: Get list of VMs
     virt:
       command: list_vms
