@@ -40,5 +40,6 @@
       lvol:
         lv: "{{ base_host_name }}"
         vg: "{{ volume_group }}"
+        size: 10G
         state: present
         opts: -T -V25G --thinpool "{{ virt_thin_pool }}"
