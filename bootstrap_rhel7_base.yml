@@ -9,9 +9,21 @@
     base_host_name: rhel7-base
 
   tasks:
-  - package:
-      name: libvirt-python
+  - name: Ensure libvirt packages are installed
+    package:
+      name: "{{ item }}"
       state: present
+    with_items:
+    - libvirt
+    - libvirt-daemon-kvm
+    - libvirt-python
+
+  - name: Ensure libvirt daemon is started
+    systemd:
+      name: libvirtd
+      state: started
+      enabled: yes
+
   - name: Get list of VMs
     virt:
       command: list_vms
