@@ -9,5 +9,5 @@ network:
     start: 192.168.133.2
     end: 192.168.133.254
   bridge: virbr2
-volume_group: fedora_jdetiber
+volume_group: rhel_ibm-p8-cluster-02
 ansible_ssh_host: "{{ inventory_hostname }}.{{ domain_name }}"
