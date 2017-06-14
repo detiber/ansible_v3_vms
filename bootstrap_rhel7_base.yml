@@ -38,7 +38,7 @@
 
     - name: Ensure base image lv is present
       lvol:
-        lv: "{{ virt_thin_pool }}"
-        vg: "{{ volume_group }}"
+        lv: "{{ base_host_name }}"
+        vg: "{{ volume_group }}/{{ virt_thin_pool }}"
         state: present
-        opts: -T -n "{{ base_host_name }}" -V25G
+        opts: -T -V25G
