@@ -7,7 +7,7 @@
   tasks:
   - name: Copy the repo file
     copy:
-      src: base_repos
+      src: files/base_repos
       dest: /etc/yum.repos.d/rhel7.repo
 
   - name: Ensure libvirt packages are installed
