@@ -69,7 +69,7 @@
 
     - name: Create base lv if needed
       command: >
-        lvcreate -T V25G --thinpool {{ volume_group }}/{{ virt_thin_pool }}
+        lvcreate -T -V25G --thinpool {{ virt_thin_pool }}
         -n {{ base_host_name }} {{ volume_group }}
       when: base_lv.rc != 0
 
