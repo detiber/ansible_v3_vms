@@ -66,10 +66,10 @@
         -n {{ base_host_name }} {{ volume_group }}
       when: base_lv.rc != 0
 
-  - name: Copy the kickstart file
-    copy:
-      src: ks-base.cfg
-      dest: ks-base.cfg
+    - name: Copy the kickstart file
+      copy:
+        src: ks-base.cfg
+        dest: ks-base.cfg
 
     - name: Install the VM
       command: >
