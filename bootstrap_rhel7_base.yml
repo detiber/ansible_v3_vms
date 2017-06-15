@@ -43,7 +43,7 @@
         --os-type=linux --os-variant=rhel7
         --controller type=scsi,model=virtio-scsi
         --location=http://download-node-02.eng.bos.redhat.com/composes/released/RHEL-7/7.3/Server/ppc64le/os/
-        --disk /dev/{{ volume_group }}/{{ base_host_name }},cache=none,io=native,discard=unmap,bus=scsi
+        --disk path=/dev/{{ volume_group }}/{{ base_host_name }},cache=none,io=native,discard=unmap,bus=scsi
         --network=default
         --nographics
         --extra-args="console=tty0 console=ttyS0,115200n8"
