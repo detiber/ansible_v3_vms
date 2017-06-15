@@ -10,6 +10,16 @@
       src: host_repos
       dest: /etc/yum.repos.d/rhel7.repo
 
+  - name: Get the state of the smt setting
+    command: ppc64_cpu --smt
+    register: smt_setting
+    changed_when: false
+
+  - name: Turn the smt setting off if needed
+    command: ppc64_cpu --smt=off
+    when: "'SMT is off' not in smt_setting.stdout"
+    register: update_smt
+
   - name: Ensure libvirt packages are installed
     package:
       name: "{{ item }}"
@@ -27,23 +37,6 @@
       name: libvirtd
       state: started
       enabled: yes
-
-  - name: Get the state of the smt setting
-    command: ppc64_cpu --smt
-    register: smt_setting
-    changed_when: false
-
-  - name: Turn the smt setting off if needed
-    command: ppc64_cpu --smt=off
-    when: "'SMT is off' not in smt_setting.stdout"
-    register: update_smt
-
-  - name: Restart libvirt
-    systemd:
-      name: libvirtd
-      state: restarted
-    when: update_smt|changed
-
 
   - name: Get list of VMs
     virt:
@@ -73,17 +66,22 @@
         -n {{ base_host_name }} {{ volume_group }}
       when: base_lv.rc != 0
 
+  - name: Copy the kickstart file
+    copy:
+      src: ks-base.cfg
+      dest: ks-base.cfg
+
     - name: Install the VM
       command: >
         virt-install --name {{ base_host_name }}
         --vcpus=24 --ram=4096
         --os-type=linux --os-variant=rhel7
         --controller type=scsi,model=virtio-scsi
-        --location=http://download-node-02.eng.bos.redhat.com/composes/released/RHEL-7/7.3/Server/ppc64le/os/
+        --location=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel/power-le/7/7Server/ppc64le/os/
         --disk path=/dev/{{ volume_group }}/{{ base_host_name }},cache=none,io=native,discard=unmap,bus=scsi
         --network=default
         --nographics
-        --extra-args="console=tty0 console=ttyS0,115200n8"
+        --extra-args="ks=file:/ks-base.cfg ip=dhcp console=tty0 console=ttyS0,115200n8"
 
     - name: Pause until VM install completed
       pause:
