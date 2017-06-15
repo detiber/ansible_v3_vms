@@ -1,0 +1,27 @@
+---
+kvm_host_packages:
+- libvirt
+- libvirt-python
+- virt-install
+kvm_host_ppc64le_packages:
+- qemu-kvm-rhev
+- qemu-img-rhev
+kvm_host_repos:
+  RedHat:
+    ppc64le:
+    - id: rhel7
+      gpgcheck: 0
+      enabled: 1
+      baseurl: http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel/power-le/7/7Server/ppc64le/os
+      name: RHEL 7 Base OS
+    - id: rhel7_rhv_mgmt_agent
+      gpgcheck: 0
+      enabled: 1
+      baseurl: http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel/power-le/7/7Server/ppc64le/rhv-mgmt-agent/4/os
+      name: RHEL 7 RHV 4 Management Agent
+    x86_64:
+    - id: rhel7
+      gpgcheck: 0
+      enabled: 1
+      baseurl: http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel/server/7/7Server/x86_64/os
+      name: RHEL 7 Base OS

@@ -1,0 +1,29 @@
+---
+- name: Configure the repos
+  template:
+    src: host_repos.j2
+    dest: /etc/yum.repos.d/rhel7.repo
+
+- when: ansible_architecture == 'ppc64le'
+  block:
+  - name: Get the state of the smt setting
+    command: ppc64_cpu --smt
+    register: smt_setting
+    changed_when: false
+
+  - name: Turn the smt setting off if needed
+    command: ppc64_cpu --smt=off
+    when: "'SMT is off' not in smt_setting.stdout"
+
+- name: Ensure libvirt packages are installed
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+  - "{{ kvm_host_packages + kvm_host_ppc64le_packages if ansible_architecture == 'ppc64le' else kvm_host_packages }}"
+
+- name: Ensure libvirt daemon is started
+  systemd:
+    name: libvirtd
+    state: started
+    enabled: yes

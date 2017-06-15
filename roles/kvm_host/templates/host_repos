@@ -1,0 +1,6 @@
+{% for repo in kvm_host_repos[ansible_distribution][ansible_architecture] %}
+[{{ repo.pop(id) }}]
+{%   for key in repo.keys() %}
+{{ key }} = {{ repo[key] }}
+{%   endfor %}
+{% endfor %}

@@ -4,40 +4,9 @@
   hosts: localhost
   connection: local
   become: yes
+  roles:
+  - kvm_host
   tasks:
-  - name: Copy the repo file
-    copy:
-      src: host_repos
-      dest: /etc/yum.repos.d/rhel7.repo
-
-  - name: Get the state of the smt setting
-    command: ppc64_cpu --smt
-    register: smt_setting
-    changed_when: false
-
-  - name: Turn the smt setting off if needed
-    command: ppc64_cpu --smt=off
-    when: "'SMT is off' not in smt_setting.stdout"
-    register: update_smt
-
-  - name: Ensure libvirt packages are installed
-    package:
-      name: "{{ item }}"
-      state: present
-    with_items:
-    - libvirt
-    - libvirt-daemon-kvm
-    - libvirt-python
-    - virt-install
-    - qemu-kvm-rhev
-    - qemu-img-rhev
-
-  - name: Ensure libvirt daemon is started
-    systemd:
-      name: libvirtd
-      state: started
-      enabled: yes
-
   - name: Get list of VMs
     virt:
       command: list_vms
@@ -83,7 +52,7 @@
         --nographics
         --initrd-inject /tmp/ks-base.cfg
         --extra-args="inst.ks=file:/ks-base.cfg ip=dhcp console=tty0 console=ttyS0,115200n8"
-        --wait 5
+        --wait 10
 
     - name: Pause until VM install completed
       pause:
