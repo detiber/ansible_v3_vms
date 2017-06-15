@@ -38,10 +38,11 @@
 
     - name: Install the VM
       command: >
-        virt-install --name "{{ base_host_name }}"
+        virt-install --name {{ base_host_name }}
         --vcpus=24 --ram=4096
         --os-type=linux --os-variant=rhel7
         --controller type=scsi,model=virtio-scsi
+        --location=http://download-node-02.eng.bos.redhat.com/composes/released/RHEL-7/7.3/Server/ppc64le/os/
         --disk /dev/{{ volume_group }}/{{ base_host_name }},cache=none,io=native,discard=unmap,bus=scsi
         --network=default
         --nographics
