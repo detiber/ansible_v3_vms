@@ -69,7 +69,7 @@
     - name: Copy the kickstart file
       copy:
         src: ks-base.cfg
-        dest: ks-base.cfg
+        dest: /tmp/ks-base.cfg
 
     - name: Install the VM
       command: >
@@ -81,7 +81,7 @@
         --disk path=/dev/{{ volume_group }}/{{ base_host_name }},cache=none,io=native,discard=unmap,bus=scsi
         --network=default
         --nographics
-        --extra-args="ks=file:/ks-base.cfg ip=dhcp console=tty0 console=ttyS0,115200n8"
+        --extra-args="ks=file://tmp/ks-base.cfg ip=dhcp console=tty0 console=ttyS0,115200n8"
 
     - name: Pause until VM install completed
       pause:
