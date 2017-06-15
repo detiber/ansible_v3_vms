@@ -77,7 +77,7 @@
         --vcpus=24 --ram=4096
         --os-type=linux --os-variant=rhel7
         --controller type=scsi,model=virtio-scsi
-        --location=http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel/power-le/7/7Server/ppc64le/os/
+        --location=http://download-node-02.eng.bos.redhat.com/composes/released/RHEL-7/7.3/Server/ppc64le/os/
         --disk path=/dev/{{ volume_group }}/{{ base_host_name }},cache=none,io=native,discard=unmap,bus=scsi
         --network=default
         --nographics
