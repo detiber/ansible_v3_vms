@@ -35,3 +35,17 @@
         size: 150G
         state: present
         opts: "--type thin -V 25G -T --thinpool {{ virt_thin_pool }}"
+
+    - name: Install the VM
+      command: >
+        virt-install --name "{{ base_host_name }}"
+        --vcpus=24 --ram=4096
+        --os-type=linux --os-variant=rhel7
+        --controller type=scsi,model=virtio-scsi
+        --disk /dev/{{ volume_group }}/{{ base_host_name }},cache=none,io=native,discard=unmap,bus=scsi
+        --network=default
+        --nographics
+        --extra-args="console=tty0 console=ttyS0,115200n8"
+
+    - name: Pause until VM install completed
+      pause:
