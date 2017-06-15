@@ -13,6 +13,7 @@
     - libvirt
     - libvirt-daemon-kvm
     - libvirt-python
+    - virt-install
 
   - name: Ensure libvirt daemon is started
     systemd:
