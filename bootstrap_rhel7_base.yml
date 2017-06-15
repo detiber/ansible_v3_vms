@@ -21,6 +21,22 @@
       state: started
       enabled: yes
 
+  - name: Get the state of the smt setting
+    command: ppc64_cpu --smt
+    register: smt_setting
+
+  - name: Turn the smt setting off if needed
+    command: ppc64_cpu --smt=off
+    when: "'SMT is off' not in smt_setting.stdout"
+    register: update_smt
+
+  - name: Restart libvirt
+    systemd:
+      name: libvirtd
+      state: restarted
+    when: update_smt|changed
+
+
   - name: Get list of VMs
     virt:
       command: list_vms
