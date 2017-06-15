@@ -5,6 +5,11 @@
   connection: local
   become: yes
   tasks:
+  - name: Copy the repo file
+    copy:
+      src: base_repos
+      dest: /etc/yum.repos.d/rhel7.repo
+
   - name: Ensure libvirt packages are installed
     package:
       name: "{{ item }}"
@@ -14,6 +19,8 @@
     - libvirt-daemon-kvm
     - libvirt-python
     - virt-install
+    - qemu-kvm-rhev
+    - qemu-img-rhev
 
   - name: Ensure libvirt daemon is started
     systemd:
@@ -24,6 +31,7 @@
   - name: Get the state of the smt setting
     command: ppc64_cpu --smt
     register: smt_setting
+    changed_when: false
 
   - name: Turn the smt setting off if needed
     command: ppc64_cpu --smt=off
