@@ -4,6 +4,23 @@
     src: host_repos.j2
     dest: /etc/yum.repos.d/rhel7.repo
 
+- name: Enable dnsmasq in NetworkManager
+  copy:
+    contents: |
+      [main]
+      dns=dnsmasq
+    dest: /etc/NetworkManager/conf.d/dnsmasq.conf
+  notify: Reload NetworkManager
+
+- name: Configure DNS settings
+  copy:
+    contents: |
+      no-negcache
+      strict-order
+      server=/{{ domain_name }}/192.168.144.1
+    dest: /etc/NetworkManager/dnsmasq.d/openshift.conf
+  notify: Reload NetworkManager
+
 - when: ansible_architecture == 'ppc64le'
   block:
   - name: Get the state of the smt setting
