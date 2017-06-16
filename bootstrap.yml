@@ -10,6 +10,4 @@
     - node1
     - node2
   roles:
-  - kvm_host
-  - kvm_snapshot_base
   - kvm_snapshot_guest
