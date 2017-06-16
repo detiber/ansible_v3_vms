@@ -9,6 +9,7 @@
     vg: "{{ volume_group }}"
     lv: "{{ base_host_name }}"
     snapshot: "{{ item }}"
+    size: 25G
     active: true
     state: present
   with_items:
