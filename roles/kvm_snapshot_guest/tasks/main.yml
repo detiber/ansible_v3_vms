@@ -25,7 +25,7 @@
     --os-type=linux --os-variant=rhel7
     --controller type=scsi,model=virtio-scsi
     --disk path=/dev/{{ volume_group }}/{{ item }},cache=none,io=native,discard=unmap,bus=scsi
-    --network={{ network.name }}
+    --network network={{ network.name }}
     --nographics
     --import
     --noreboot
