@@ -37,6 +37,5 @@
   command: >
     virt-customize -d {{ item }}
     --hostname {{ item }}.{{ domain_name }}
-    #    --update
   with_items:
     - "{{ kvm_snapshot_guest_hostnames }}"
