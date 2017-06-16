@@ -31,11 +31,23 @@
     --noreboot
   when: item not in vm_list.list_vms
   with_items:
-    - "{{ kvm_snapshot_guest_hostnames }}"
+  - "{{ kvm_snapshot_guest_hostnames }}"
 
 - name: Update the VMs
   command: >
     virt-customize -d {{ item }}
     --hostname {{ item }}.{{ domain_name }}
   with_items:
-    - "{{ kvm_snapshot_guest_hostnames }}"
+  - "{{ kvm_snapshot_guest_hostnames }}"
+
+- name: Start the VMs
+  virt:
+    name: "{{ item }}"
+    state: running
+  with_items:
+  - "{{ kvm_snapshot_guest_hostnames }}"
+
+- name: Wait for hosts to be available
+  wait_for: port=22 host={{ item }}.{{ domain_name }}
+  with_items:
+  - "{{ kvm_snapshot_guest_hostnames }}"
