@@ -53,5 +53,5 @@
 
   - name: Modify the base image
     command:
-      virt-customize -d rhel7-base
+      virt-sysprep -d rhel7-base
       --ssh-inject root:file:/root/.ssh/id_rsa.pub

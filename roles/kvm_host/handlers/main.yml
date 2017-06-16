@@ -1,8 +1,8 @@
 ---
-- name: Reload NetworkManager
+- name: Restart NetworkManager
   systemd:
     name: NetworkManager
-    state: reloaded
+    state: restarted
 
 - name: Start libvirt Network
   virt_net:

@@ -10,16 +10,16 @@
       [main]
       dns=dnsmasq
     dest: /etc/NetworkManager/conf.d/dnsmasq.conf
-  notify: Reload NetworkManager
+  notify: Restart NetworkManager
 
 - name: Configure DNS settings
   copy:
     content: |
       no-negcache
       strict-order
-      server=/{{ domain_name }}/192.168.144.1
+      server=/{{ domain_name }}/{{ network.gateway }}
     dest: /etc/NetworkManager/dnsmasq.d/openshift.conf
-  notify: Reload NetworkManager
+  notify: Restart NetworkManager
 
 - when: ansible_architecture == 'ppc64le'
   block:
