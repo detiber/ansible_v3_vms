@@ -1,4 +1,3 @@
-qemu_uri: qemu:///system
 domain_name: ose.example.com
 network:
   name: openshift

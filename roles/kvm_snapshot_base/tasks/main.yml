@@ -12,7 +12,6 @@
 - name: Get list of VMs
   virt:
     command: list_vms
-    uri: "{{ qemu_uri }}"
   register: vm_list
 
 - when: base_host_name not in vm_list.list_vms
