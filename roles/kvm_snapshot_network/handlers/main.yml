@@ -12,4 +12,4 @@
 - name: Auto Start libvirt Network
   virt_net:
     autostart: yes
-    ame: "{{ kvm_snapshot_network_name }}"
+    name: "{{ kvm_snapshot_network_name }}"
