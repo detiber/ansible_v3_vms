@@ -23,17 +23,11 @@
         state: present
         opts: -T
 
-    - name: Test for base lv
-      command: "lvs {{ volume_group }}/{{ base_host_name }}"
-      register: base_lv
-      failed_when: false
-      changed_when: false
-
     - name: Create base lv if needed
       command: >
         lvcreate -T -V25G --thinpool {{ virt_thin_pool }}
         -n {{ base_host_name }} {{ volume_group }}
-      when: base_lv.rc != 0
+      when: base_host_name not in ansible_lvm.lvs.keys()
 
     - name: Copy the kickstart file
       copy:
