@@ -1,9 +1,0 @@
-#cloud-config
-chpasswd: 
-  list: |
-    root:atomic
-    cloud-user:atomic
-  expire: False
-ssh_pwauth: True
-ssh_authorized_keys:
-- {{ ssh_key }}
