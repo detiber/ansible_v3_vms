@@ -1,0 +1,57 @@
+---
+- name: Check for existence of ssh key
+  stat:
+    path: /root/.ssh/id_rsa
+  register: ssh_key_stat
+
+- name: Create the ssh key if not present
+  command: >
+    ssh-keygen -f /root/.ssh/id_rsa -t rsa -N ''
+  when: not ssh_key_stat.stat.exists
+
+- name: Get list of VMs
+  virt:
+    command: list_vms
+    uri: "{{ qemu_uri }}"
+  register: vm_list
+
+- when: base_host_name not in vm_list.list_vms
+  block:
+  - name: Ensure the thin pool is present
+    lvol:
+      lv: "{{ virt_thin_pool }}"
+      vg: "{{ volume_group }}"
+      size: 150G
+      state: present
+      opts: -T
+
+  - name: Create base lv if needed
+    command: >
+      lvcreate -T -V25G --thinpool {{ virt_thin_pool }}
+      -n {{ base_host_name }} {{ volume_group }}
+    when: base_host_name not in ansible_lvm.lvs.keys()
+
+  - name: Copy the kickstart file
+    copy:
+      src: ks-base.cfg
+      dest: /tmp/ks-base.cfg
+
+  - name: Install the VM
+    command: >
+      virt-install --name {{ base_host_name }}
+      --vcpus=24 --ram=4096
+      --os-type=linux --os-variant=rhel7
+      --controller type=scsi,model=virtio-scsi
+      --location=http://download-node-02.eng.bos.redhat.com/composes/released/RHEL-7/7.3/Server/ppc64le/os/
+      --disk path=/dev/{{ volume_group }}/{{ base_host_name }},cache=none,io=native,discard=unmap,bus=scsi
+      --network=default
+      --nographics
+      --initrd-inject /tmp/ks-base.cfg
+      --extra-args="inst.ks=file:/ks-base.cfg ip=dhcp console=tty0 console=ttyS0,115200n8"
+      --wait 20
+      --noreboot
+
+  - name: Modify the base image
+    command:
+      virt-customize -d rhel7-base
+      --ssh-inject root:file:/root/.ssh/id_rsa.pub
