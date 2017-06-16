@@ -16,11 +16,13 @@
   tasks:
   - yum_repository:
       name: rhel7-base
+      description: RHEL 7 Base OS
       baseurl: http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel/power-le/7/7Server/
       gpgcheck: no
 
   - yum_repository:
-      name: rhel7-base
+      name: rhel7-extras
+      description: RHEL 7 Extras
       baseurl: http://download.eng.bos.redhat.com/nightly/RHEL-7.4-20170607.n.0/compose/Server/ppc64le/os
       gpgcheck: no
 
