@@ -3,6 +3,7 @@ kvm_host_packages:
 - libvirt
 - libvirt-python
 - virt-install
+- libguestfs-tools
 kvm_host_ppc64le_packages:
 - qemu-kvm-rhev
 - qemu-img-rhev
