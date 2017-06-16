@@ -25,7 +25,7 @@
     --os-type=linux --os-variant=rhel7
     --controller type=scsi,model=virtio-scsi
     --disk path=/dev/{{ kvm_snapshot_base_vg }}/{{ item }},cache=none,io=native,discard=unmap,bus=scsi
-    --network network={{ kvm_snapshot_network_name }}
+    --network network={{ kvm_snapshot_cluster_id }}
     --nographics
     --import
     --noreboot
@@ -36,7 +36,7 @@
 - name: Update the VMs
   command: >
     virt-customize -d {{ item }}
-    --hostname {{ item }}.{{ kvm_snapshot_network_domain }}
+    --hostname {{ item }}.{{ kvm_snapshot_cluster_domain }}
   when: item not in vm_list.list_vms
   with_items:
   - "{{ kvm_snapshot_guest_hostnames }}"
@@ -49,6 +49,6 @@
   - "{{ kvm_snapshot_guest_hostnames }}"
 
 - name: Wait for hosts to be available
-  wait_for: port=22 host={{ item }}.{{ kvm_snapshot_network_domain }}
+  wait_for: port=22 host={{ item }}.{{ kvm_snapshot_cluster_domain }}
   with_items:
   - "{{ kvm_snapshot_guest_hostnames }}"

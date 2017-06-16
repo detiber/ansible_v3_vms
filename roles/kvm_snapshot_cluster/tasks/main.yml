@@ -13,3 +13,11 @@
     kvm_network_domain: "{{ kvm_snapshot_cluster_domain }}"
     kvm_network_bridge: "{{ kvm_snapshot_cluster_bridge }}"
     kvm_network_cidr: "{{ kvm_snapshot_cluster_cidr }}"
+
+- include_role:
+    name: kvm_snapshot_guest
+  vars:
+    kvm_snapshot_guest_hostnames:
+    - master
+    - node1
+    - node2
