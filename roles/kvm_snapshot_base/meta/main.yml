@@ -12,4 +12,4 @@ galaxy_info:
     - 7
   galaxy_tags: []
 dependencies:
-- kvm_snapshot_network
+- kvm_host

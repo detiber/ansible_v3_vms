@@ -12,4 +12,4 @@ galaxy_info:
     - 7
   galaxy_tags: []
 dependencies:
-- kvm_snapshot_base
+- role: kvm_snapshot_base

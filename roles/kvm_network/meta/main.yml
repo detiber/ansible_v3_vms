@@ -1,6 +1,6 @@
 galaxy_info:
   author: Jason DeTiberus
-  description: KVM Snapshot Network
+  description: KVM Network
   license: Apache V2.0
   min_ansible_version: 2.2
   platforms:

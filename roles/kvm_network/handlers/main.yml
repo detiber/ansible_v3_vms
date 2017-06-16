@@ -7,9 +7,9 @@
 - name: Start libvirt Network
   virt_net:
     state: active
-    name: "{{ kvm_snapshot_network_name }}"
+    name: "{{ kvm_network_name }}"
 
 - name: Auto Start libvirt Network
   virt_net:
     autostart: yes
-    name: "{{ kvm_snapshot_network_name }}"
+    name: "{{ kvm_network_name }}"

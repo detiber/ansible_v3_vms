@@ -5,6 +5,9 @@
   connection: local
   become: yes
   vars:
-    cluster_id: test
+    kvm_snapshot_cluster_id: test
+    kvm_snapshot_cluster_bridge: virbr0
+    kvm_snapshot_clsuter_cidr: 192.168.133.0/24
+    kvm_snapshot_cluster_parent_domain: example.com
   roles:
   - kvm_snapshot_cluster

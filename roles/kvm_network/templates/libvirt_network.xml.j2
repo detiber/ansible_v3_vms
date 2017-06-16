@@ -1,0 +1,19 @@
+<network>
+  <name>{{ kvm_network_name }}</name>
+  <forward mode='nat'>
+    <nat>
+      <port start='1024' end='65535'/>
+    </nat>
+  </forward>
+  <bridge name='{{ kvm_network_bridge }}' stp='on' delay='0'/>
+  <domain name='{{ kvm_network_domain }}' localOnly='yes'/>
+  <dns>
+  </dns>
+  <ip address='{{ kvm_network_gateway }}'
+      netmask='{{ kvm_network_netmask }}'>
+    <dhcp>
+      <range start='{{ kvm_network_dhcp_start }}'
+             end='{{ kvm_network_dhcp_end }}'/>
+    </dhcp>
+  </ip>
+</network>

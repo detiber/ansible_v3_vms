@@ -1,7 +1,0 @@
----
-kvm_snapshot_network_gateway: "{{ kvm_snapshot_network_cidr | ipaddr(1) | ipaddr('address') }}"
-kvm_snapshot_network_network: "{{ kvm_snapshot_network_cidr | ipaddr('network') }}"
-kvm_snapshot_network_broadcast: "{{ kvm_snapshot_network_cidr | ipaddr('broadcast') }}"
-kvm_snapshot_network_netmask: "{{ kvm_snapshot_network_cidr | ipaddr('netmask') }}"
-kvm_snapshot_network_dhcp_start: "{{ kvm_snapshot_network_cidr | ipaddr(100) | ipaddr('address') }}"
-kvm_snapshot_network_dhcp_end: "{{ kvm_snapshot_network_cidr | ipaddr(-2) | ipaddr('address') }}"

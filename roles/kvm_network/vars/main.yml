@@ -1,0 +1,7 @@
+---
+kvm_network_gateway: "{{ kvm_network_cidr | ipaddr(1) | ipaddr('address') }}"
+kvm_network_network: "{{ kvm_network_cidr | ipaddr('network') }}"
+kvm_network_broadcast: "{{ kvm_network_cidr | ipaddr('broadcast') }}"
+kvm_network_netmask: "{{ kvm_network_cidr | ipaddr('netmask') }}"
+kvm_network_dhcp_start: "{{ kvm_network_cidr | ipaddr(100) | ipaddr('address') }}"
+kvm_network_dhcp_end: "{{ kvm_network_cidr | ipaddr(-2) | ipaddr('address') }}"

@@ -1,7 +1,7 @@
-KVM Snapshot Network
+KVM Network
 =========
 
-Configures a libvirt network for the snapshot vms
+Configures a libvirt network
 
 Requirements
 ------------

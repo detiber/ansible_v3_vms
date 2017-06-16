@@ -1,0 +1,2 @@
+---
+kvm_snapshot_cluster_domain: "{{ kvm_snapshot_cluster_id }}.{{ kvm_snapshot_cluster_parent_domain }}"
