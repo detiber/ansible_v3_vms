@@ -57,5 +57,6 @@
   add_host:
     name: "{{ item }}"
     groups: "{{ kvm_snapshot_guest_group_mappings.master if item.startswith('master') else kvm_snapshot_guest_group_mappings.node }}"
+    ansible_ssh_host: "{{ item }}.{{ kvm_snapshot_cluster_domain }}"
   with_items:
   - "{{ kvm_snapshot_guest_hostnames }}"
