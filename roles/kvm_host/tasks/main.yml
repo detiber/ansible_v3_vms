@@ -50,13 +50,8 @@
     state: present
     name: "{{ network.name }}"
     xml: "{{ lookup('template', 'templates/libvirt_network.xml.j2') }}"
+  notify:
+  - Start libvirt Network
+  - Auto Start libvirt Network
 
-- name: Set the libvirt network to autostart
-  virt_net:
-    autostart: yes
-    name: "{{ network.name }}"
-
-- name: Start the libvirt network
-  virt_net:
-    state: active
-    name: "{{ network.name }}"
+- meta: flush_handlers
