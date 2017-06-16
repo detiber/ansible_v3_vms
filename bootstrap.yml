@@ -30,6 +30,7 @@
 - include: /tmp/openshift-ansible/playbooks/byo/openshift-cluster/config.yml
   vars:
     openshift_deployment_type: openshift-enterprise
+    os_firewall_use_firewalld: True
     openshift_additional_repos:
     - id: rhaos-multiarch
       name: rhaos-multiarch
