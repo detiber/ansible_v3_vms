@@ -37,3 +37,8 @@
       baseurl: http://download-node-02.eng.bos.redhat.com/brewroot/repos/rhaos-3.5-rhel-7-newarches-build/latest/ppc64le/
       gpgcheck: 0
       enabled: 1
+    - id: fastdatapath-multiarch
+      name: fastdatapath-multiarch
+      baseurl: http://download-node-02.eng.bos.redhat.com/brewroot/repos/fast-datapath-rhel-7-newarches-build/latest/ppc64le/
+      gpgcheck: 0
+      enabled: 1
