@@ -7,6 +7,16 @@
   roles:
   - kvm_host
   tasks:
+  - name: Check for existence of ssh key
+    stat:
+      path: /root/.ssh/id_rsa
+    register: ssh_key_stat
+
+  - name: Create the ssh key if not present
+    command: >
+      ssh-keygen -f /root/.ssh/id_rsa -t rsa -N ''
+    when: not ssh_key_stat.stat.exists
+
   - name: Get list of VMs
     virt:
       command: list_vms
@@ -48,16 +58,6 @@
         --extra-args="inst.ks=file:/ks-base.cfg ip=dhcp console=tty0 console=ttyS0,115200n8"
         --wait 20
         --noreboot
-
-  - name: Check for existence of ssh key
-    stat:
-      path: /root/.ssh/id_rsa
-    register: ssh_key_stat
-
-  - name: Create the ssh key if not present
-    command: >
-      ssh-keygen -r /root/.ssh/id_rsa -t rsa -N ''
-    when: not ssh_key_stat.stat.exists
 
   - name: Modify the base image
     command:
