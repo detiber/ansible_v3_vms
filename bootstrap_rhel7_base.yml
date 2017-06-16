@@ -48,10 +48,10 @@
         --extra-args="inst.ks=file:/ks-base.cfg ip=dhcp console=tty0 console=ttyS0,115200n8"
         --wait 20
 
-    - name: Check for existence of ssh key
-      stat:
-        path: /root/.ssh/id_rsa
-      register: ssh_key_stat
+  - name: Check for existence of ssh key
+    stat:
+      path: /root/.ssh/id_rsa
+    register: ssh_key_stat
 
   - name: Create the ssh key if not present
     command: >
