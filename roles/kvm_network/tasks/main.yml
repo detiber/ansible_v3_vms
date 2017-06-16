@@ -6,7 +6,7 @@
 
 - assert:
     that:
-      - kvm_snapshot_network_cidr | ipaddr('net')
+      - kvm_network_cidr | ipaddr('net')
 
 - name: Enable dnsmasq in NetworkManager
   copy:
