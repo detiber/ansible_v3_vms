@@ -5,13 +5,16 @@
   register: vm_list
 
 - name: Create the VM logical volumes
-  lvol:
-    vg: "{{ volume_group }}"
-    lv: "{{ base_host_name }}"
-    snapshot: "{{ item }}"
-    size: 25G
-    active: true
-    state: present
+  command: >
+    lvcreate -s {{ volume_group }}/{{ base_host_name }} -n {{ item }}
+  when: item not in ansible_lvm.lvs.keys()
+  with_items:
+  - "{{ kvm_snapshot_guest_hostnames }}"
+
+- name: Enable the VM logical volumes
+  command: >
+    lvchange -ay -K {{ volume_group }}/{{ item }}
+  when: item not in ansible_lvm.lvs.keys()
   with_items:
   - "{{ kvm_snapshot_guest_hostnames }}"
 
