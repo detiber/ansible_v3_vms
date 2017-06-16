@@ -47,6 +47,7 @@
         --initrd-inject /tmp/ks-base.cfg
         --extra-args="inst.ks=file:/ks-base.cfg ip=dhcp console=tty0 console=ttyS0,115200n8"
         --wait 20
+        --noreboot
 
   - name: Check for existence of ssh key
     stat:
