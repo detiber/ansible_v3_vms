@@ -6,7 +6,7 @@
 
 - name: Enable dnsmasq in NetworkManager
   copy:
-    contents: |
+    content: |
       [main]
       dns=dnsmasq
     dest: /etc/NetworkManager/conf.d/dnsmasq.conf
@@ -14,7 +14,7 @@
 
 - name: Configure DNS settings
   copy:
-    contents: |
+    content: |
       no-negcache
       strict-order
       server=/{{ domain_name }}/192.168.144.1
