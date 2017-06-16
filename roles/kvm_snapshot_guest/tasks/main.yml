@@ -58,4 +58,4 @@
     name: "{{ item }}"
     groups: "{{ kvm_snapshot_guest_group_mappings.master if item.startswith('master') else kvm_snapshot_guest_group_mappings.node }}"
   with_items:
-  - "{{ kvm_snaphost_guest_hostnames }}"
+  - "{{ kvm_snapshot_guest_hostnames }}"
