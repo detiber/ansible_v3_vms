@@ -27,3 +27,10 @@
     name: libvirtd
     state: started
     enabled: yes
+
+- name: Create the libvirt network
+  virt_net:
+    autostart: yes
+    state: active
+    name: "{{ network.name }}"
+    xml: "{{ lookup('template', 'templates/libvirt_network.xml.j2') }}"

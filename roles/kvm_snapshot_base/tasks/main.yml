@@ -44,7 +44,7 @@
       --controller type=scsi,model=virtio-scsi
       --location=http://download-node-02.eng.bos.redhat.com/composes/released/RHEL-7/7.3/Server/ppc64le/os/
       --disk path=/dev/{{ volume_group }}/{{ base_host_name }},cache=none,io=native,discard=unmap,bus=scsi
-      --network=default
+      --network={{ network.name }}
       --nographics
       --initrd-inject /tmp/ks-base.cfg
       --extra-args="inst.ks=file:/ks-base.cfg ip=dhcp console=tty0 console=ttyS0,115200n8"

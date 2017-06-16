@@ -1,0 +1,31 @@
+---
+- name: Get the list of VMs
+  virt:
+    command: list_vms
+  register: vm_list
+
+- name: Create the VM logical volumes
+  lvol:
+    vg: "{{ volume_group }}"
+    lv: "{{ item }}"
+    snapshot: "{{ base_host_name }}"
+    active: true
+    state: present
+  with_items:
+  - kvm_snapshot_guests_hostnames
+
+- name: Create the VMs
+  command: >
+    virt-install --name {{ item }}
+    --vcpus=24 --ram=4096
+    --os-type=linux --os-variant=rhel7
+    --controller type=scsi,model=virtio-scsi
+    --disk path=/dev/{{ volume_group }}/{{ item }},cache=none,io=native,discard=unmap,bus=scsi
+    --network={{ network.name }}
+    --nographics
+    --import
+    --extra-args="console=tty0 console=ttyS0,115200n8"
+    --noreboot
+  when: item not in vm_list.list_vms
+  with_items:
+  - kvm_snapshot_guests_hostnames
