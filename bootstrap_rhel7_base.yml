@@ -53,12 +53,12 @@
         path: /root/.ssh/id_rsa
       register: ssh_key_stat
 
-    - name: Create the ssh key if not present
-      command: >
-        ssh-keygen -r /root/.ssh/id_rsa -t rsa -N ''
-      when: not ssh_key_stat.exists
+  - name: Create the ssh key if not present
+    command: >
+      ssh-keygen -r /root/.ssh/id_rsa -t rsa -N ''
+    when: not ssh_key_stat.stat.exists
 
-    - name: Modify the base image
-      command:
-        virt-customize -d rhel7-base
-        --ssh-inject root:file:/root/.ssh/id_rsa.pub
+  - name: Modify the base image
+    command:
+      virt-customize -d rhel7-base
+      --ssh-inject root:file:/root/.ssh/id_rsa.pub
