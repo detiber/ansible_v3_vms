@@ -54,3 +54,4 @@
     command:
       virt-sysprep -d rhel7-base
       --ssh-inject root:file:/root/.ssh/id_rsa.pub
+      --selinux-relabel
