@@ -25,7 +25,6 @@
     --network={{ network.name }}
     --nographics
     --import
-    --extra-args="console=tty0 console=ttyS0,115200n8"
     --noreboot
   when: item not in vm_list.list_vms
   with_items:
