@@ -1,12 +1,12 @@
 ---
-- assert:
-    that:
-      - kvm_snapshot_network_cidr | ipaddr('net')
-
 - name: Install required dependencies
   package:
     name: python-netaddr
     state: present
+
+- assert:
+    that:
+      - kvm_snapshot_network_cidr | ipaddr('net')
 
 - name: Enable dnsmasq in NetworkManager
   copy:
