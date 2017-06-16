@@ -1,0 +1,5 @@
+---
+kvm_snapshot_network_name: openshift
+kvm_snapshot_network_cidr: 192.168.133.0/24
+kvm_snapshot_network_domain: ocp.example.com
+kvm_snapshot_network_bridge: virbr2

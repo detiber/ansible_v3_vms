@@ -6,14 +6,14 @@
 
 - name: Create the VM logical volumes
   command: >
-    lvcreate -s {{ volume_group }}/{{ base_host_name }} -n {{ item }}
+    lvcreate -s {{ kvm_snapshot_base_vg }}/{{ kvm_snapshot_base_name }} -n {{ item }}
   when: item not in ansible_lvm.lvs.keys()
   with_items:
   - "{{ kvm_snapshot_guest_hostnames }}"
 
 - name: Enable the VM logical volumes
   command: >
-    lvchange -ay -K {{ volume_group }}/{{ item }}
+    lvchange -ay -K {{ kvm_snapshot_base_vg }}/{{ item }}
   when: item not in ansible_lvm.lvs.keys()
   with_items:
   - "{{ kvm_snapshot_guest_hostnames }}"
@@ -24,8 +24,8 @@
     --vcpus=24 --ram=4096
     --os-type=linux --os-variant=rhel7
     --controller type=scsi,model=virtio-scsi
-    --disk path=/dev/{{ volume_group }}/{{ item }},cache=none,io=native,discard=unmap,bus=scsi
-    --network network={{ network.name }}
+    --disk path=/dev/{{ kvm_snapshot_base_vg }}/{{ item }},cache=none,io=native,discard=unmap,bus=scsi
+    --network network={{ kvm_snapshot_network_name }}
     --nographics
     --import
     --noreboot
@@ -36,7 +36,7 @@
 - name: Update the VMs
   command: >
     virt-customize -d {{ item }}
-    --hostname {{ item }}.{{ domain_name }}
+    --hostname {{ item }}.{{ kvm_snapshot_network_domain }}
   when: item not in vm_list.list_vms
   with_items:
   - "{{ kvm_snapshot_guest_hostnames }}"
@@ -49,6 +49,6 @@
   - "{{ kvm_snapshot_guest_hostnames }}"
 
 - name: Wait for hosts to be available
-  wait_for: port=22 host={{ item }}.{{ domain_name }}
+  wait_for: port=22 host={{ item }}.{{ kvm_snapshot_network_domain }}
   with_items:
   - "{{ kvm_snapshot_guest_hostnames }}"

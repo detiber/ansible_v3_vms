@@ -1,0 +1,4 @@
+---
+kvm_snapshot_base_name: rhel7-base
+kvm_snapshot_base_vg: rhel_ibm-p8-cluster-02
+kvm_snapshot_base_thin_pool: libvirt-pool

@@ -1,0 +1,32 @@
+---
+- assert:
+    that:
+      - kvm_snapshot_network_cidr | ipaddr('net')
+
+- name: Enable dnsmasq in NetworkManager
+  copy:
+    content: |
+      [main]
+      dns=dnsmasq
+    dest: /etc/NetworkManager/conf.d/dnsmasq.conf
+  notify: Restart NetworkManager
+
+- name: Configure DNS settings
+  copy:
+    content: |
+      no-negcache
+      strict-order
+      server=/{{ kvm_snapshot_network_domain }}/{{ kvm_snapshot_network_gateway }}
+    dest: /etc/NetworkManager/dnsmasq.d/openshift.conf
+  notify: Restart NetworkManager
+
+- name: Create the libvirt network
+  virt_net:
+    state: present
+    name: "{{ kvm_snapshot_network_name }}"
+    xml: "{{ lookup('template', 'templates/libvirt_network.xml.j2') }}"
+  notify:
+  - Start libvirt Network
+  - Auto Start libvirt Network
+
+- meta: flush_handlers

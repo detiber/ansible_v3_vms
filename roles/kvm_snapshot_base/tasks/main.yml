@@ -14,21 +14,21 @@
     command: list_vms
   register: vm_list
 
-- when: base_host_name not in vm_list.list_vms
+- when: kvm_snapshot_base_name not in vm_list.list_vms
   block:
   - name: Ensure the thin pool is present
     lvol:
-      lv: "{{ virt_thin_pool }}"
-      vg: "{{ volume_group }}"
+      lv: "{{ kvm_snapshot_base_thin_pool }}"
+      vg: "{{ kvm_snapshot_base_vg }}"
       size: 150G
       state: present
       opts: -T
 
   - name: Create base lv if needed
     command: >
-      lvcreate -T -V25G --thinpool {{ virt_thin_pool }}
-      -n {{ base_host_name }} {{ volume_group }}
-    when: base_host_name not in ansible_lvm.lvs.keys()
+      lvcreate -T -V25G --thinpool {{ kvm_snapshot_base_thin_pool }}
+      -n {{ kvm_snapshot_base_name }} {{ kvm_snapshot_base_vg }}
+    when: kvm_snapshot_base_name not in ansible_lvm.lvs.keys()
 
   - name: Copy the kickstart file
     copy:
@@ -37,13 +37,13 @@
 
   - name: Install the VM
     command: >
-      virt-install --name {{ base_host_name }}
+      virt-install --name {{ kvm_snapshot_base_name }}
       --vcpus=24 --ram=4096
       --os-type=linux --os-variant=rhel7
       --controller type=scsi,model=virtio-scsi
       --location=http://download-node-02.eng.bos.redhat.com/composes/released/RHEL-7/7.3/Server/ppc64le/os/
-      --disk path=/dev/{{ volume_group }}/{{ base_host_name }},cache=none,io=native,discard=unmap,bus=scsi
-      --network network={{ network.name }}
+      --disk path=/dev/{{ kvm_snapshot_base_vg }}/{{ kvm_snapshot_base_name }},cache=none,io=native,discard=unmap,bus=scsi
+      --network network={{ kvm_snapshot_network_name }}
       --nographics
       --initrd-inject /tmp/ks-base.cfg
       --extra-args="inst.ks=file:/ks-base.cfg ip=dhcp console=tty0 console=ttyS0,115200n8"
