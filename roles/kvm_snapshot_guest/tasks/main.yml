@@ -7,8 +7,8 @@
 - name: Create the VM logical volumes
   lvol:
     vg: "{{ volume_group }}"
-    lv: "{{ item }}"
-    snapshot: "{{ base_host_name }}"
+    lv: "{{ base_host_name }}"
+    snapshot: "{{ item }}"
     active: true
     state: present
   with_items:
