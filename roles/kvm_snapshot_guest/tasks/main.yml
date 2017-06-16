@@ -31,4 +31,12 @@
     --noreboot
   when: item not in vm_list.list_vms
   with_items:
-  - "{{ kvm_snapshot_guest_hostnames }}"
+    - "{{ kvm_snapshot_guest_hostnames }}"
+
+- name: Update the VMs
+  command: >
+    virt-customize -d {{ item }}
+    --hostname {{ item }}.{{ domain_name }}
+    --update
+  with_items:
+    - "{{ kvm_snapshot_guest_hostnames }}"
