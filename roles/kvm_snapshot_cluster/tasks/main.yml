@@ -1,0 +1,4 @@
+---
+- assert:
+    that:
+    - kvm_snapshot_cluster_id is defined

@@ -1,0 +1,15 @@
+galaxy_info:
+  author: Jason DeTiberus
+  description: KVM Snapshot Cluster
+  license: Apache V2.0
+  min_ansible_version: 2.2
+  platforms:
+  - name: Fedora
+    versions:
+    - 25
+  - name: EL
+    versions:
+    - 7
+  galaxy_tags: []
+dependencies:
+- kvm_snapshot_base

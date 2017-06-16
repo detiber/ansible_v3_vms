@@ -5,9 +5,6 @@
   connection: local
   become: yes
   vars:
-    kvm_snapshot_guest_hostnames:
-    - master
-    - node1
-    - node2
+    cluster_id: test
   roles:
-  - kvm_snapshot_guest
+  - kvm_snapshot_cluster
