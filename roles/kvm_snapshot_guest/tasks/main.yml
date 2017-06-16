@@ -12,7 +12,7 @@
     active: true
     state: present
   with_items:
-  - kvm_snapshot_guest_hostnames
+  - "{{ kvm_snapshot_guest_hostnames }}"
 
 - name: Create the VMs
   command: >
@@ -28,4 +28,4 @@
     --noreboot
   when: item not in vm_list.list_vms
   with_items:
-  - kvm_snapshot_guest_hostnames
+  - "{{ kvm_snapshot_guest_hostnames }}"
