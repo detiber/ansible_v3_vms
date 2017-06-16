@@ -1,0 +1,8 @@
+---
+kvm_snapshot_guest_group_mappings:
+  master:
+  - masters
+  - etcd
+  - nodes
+  node:
+  - nodes

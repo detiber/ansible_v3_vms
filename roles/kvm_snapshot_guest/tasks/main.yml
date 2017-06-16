@@ -52,3 +52,10 @@
   wait_for: port=22 host={{ item }}.{{ kvm_snapshot_cluster_domain }}
   with_items:
   - "{{ kvm_snapshot_guest_hostnames }}"
+
+- name: Add hosts to proper groups
+  add_host:
+    name: "{{ item }}"
+    groups: "{{ kvm_snapshot_guest_group_mappings.master if item.startswith('master') else kvm_snapshot_guest_group_mappings.node }}"
+  with_items:
+  - "{{ kvm_snaphost_guest_hostnames }}"
