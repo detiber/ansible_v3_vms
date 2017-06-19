@@ -31,6 +31,7 @@
   vars:
     openshift_deployment_type: openshift-enterprise
     os_firewall_use_firewalld: True
+    oreg_url: docker-registry.engineering.redhat.com/multi-arch/ppc64le-openshift3-ose-${component}:${version}
     openshift_additional_repos:
     - id: rhaos-multiarch
       name: rhaos-multiarch
