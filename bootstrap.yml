@@ -13,7 +13,18 @@
   - kvm_snapshot_cluster
 
 - hosts: all
+  handlers:
+  - name: Restart Docker
+    systemd:
+      name: docker
+      state: restarted
+    when: docker_stat.stat.exists
   tasks:
+  - name: Test if docker present
+    stat:
+      path: /usr/bin/docker
+    register: docker_stat
+
   - yum_repository:
       name: rhel7-base
       description: RHEL 7 Base OS
@@ -26,6 +37,11 @@
       baseurl: http://download-node-02.eng.bos.redhat.com/devel/candidate-trees/EXTRAS-7.4-RHEL-7-20170526.0/compose/Server/ppc64le/os/
       gpgcheck: no
 
+  - name: Install the Red Hat CA
+    package:
+      name: http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/redhat-internal-cert-install-0.1-7.el7.csb.noarch.rpm
+      state: present
+    notify: Restart Docker
 
 - include: /tmp/openshift-ansible/playbooks/byo/openshift-cluster/config.yml
   vars:
