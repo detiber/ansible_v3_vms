@@ -1,0 +1,13 @@
+---
+- name: Configure DNS settings
+  file:
+    dest: /etc/NetworkManager/dnsmasq.d/{{ kvm_network_name }}.conf
+    state: absent
+  notify: Reload NetworkManager
+
+- name: Remove the libvirt network
+  virt_net:
+    state: absent
+    name: "{{ kvm_network_name }}"
+
+- meta: flush_handlers

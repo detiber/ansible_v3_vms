@@ -4,6 +4,11 @@
     name: NetworkManager
     state: restarted
 
+- name: Reload NetworkManager
+  systemd:
+    name: NetworkManager
+    state: reloaded
+
 - name: Start libvirt Network
   virt_net:
     state: active

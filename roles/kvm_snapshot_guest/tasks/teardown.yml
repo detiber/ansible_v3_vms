@@ -1,0 +1,31 @@
+---
+- name: Get the list of VMs
+  virt:
+    command: list_vms
+  register: vm_list
+
+- name: Remove the the VMs
+  virt:
+    name: "{{ item }}"
+    state: destroyed
+  when: item in vm_list.list_vms
+  with_items:
+  - "{{ kvm_snapshot_guest_hostnames }}"
+
+- name: Undefine the the VMs
+  virt:
+    name: "{{ item }}"
+    command: undefine
+  when: item in vm_list.list_vms
+  with_items:
+  - "{{ kvm_snapshot_guest_hostnames }}"
+
+- name: Remove the VM logical volumes
+  lvol:
+    vg: "{{ kvm_snapshot_base_vg }}"
+    lv: "{{ item }}"
+    force: yes
+    state: absent
+  when: item in ansible_lvm.lvs.keys()
+  with_items:
+  - "{{ kvm_snapshot_guest_hostnames }}"

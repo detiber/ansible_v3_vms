@@ -1,0 +1,21 @@
+---
+- assert:
+    that:
+    - kvm_snapshot_cluster_id is defined
+    - kvm_snapshot_cluster_parent_domain is defined
+
+- include_role:
+    name: kvm_snapshot_guest
+    tasks_from: teardown
+  vars:
+    kvm_snapshot_guest_hostnames:
+    - master
+    - node1
+    - node2
+
+- include_role:
+    name: kvm_network
+    tasks_from: teardown
+  vars:
+    kvm_network_name: "{{ kvm_snapshot_cluster_id }}"
+    kvm_network_domain: "{{ kvm_snapshot_cluster_domain }}"
