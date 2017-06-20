@@ -4,15 +4,52 @@
   hosts: localhost
   connection: local
   become: yes
-  vars:
-    kvm_snapshot_cluster_id: test
-    kvm_snapshot_cluster_bridge: virbr1
-    kvm_snapshot_cluster_cidr: 192.168.144.0/24
-    kvm_snapshot_cluster_parent_domain: example.com
+  vars_prompt:
+  - name: kvm_snapshot_cluster_id
+    prmopt: Cluster ID
+    default: test
+  - name: kvm_snapshot_cluster_bridge
+    prompt: Cluster Bridge
+    default: virbr1
+  - name: kvm_snapshot_cluster_cidr
+    prompt: Cluster CIDR
+    default: 192.168.133.0/24
+  - name: kvm_snapshot_cluster_parent_domain
+    prompt: Cluster Parent Domain
+    default: example.com
+  - name: kvm_snapshot_base_vg
+    prompt: Snapshot Base VG
+    default: fedora_jdetiber
   roles:
   - kvm_snapshot_cluster
 
 - hosts: all
+  vars:
+    guest_repos:
+      RedHat:
+        ppc64le:
+        - id: rhel7-base
+          name: RHEL 7 Base OS
+          baseurl: http://download.eng.bos.redhat.com/nightly/RHEL-7.4-20170607.n.0/compose/Server/ppc64le/os
+        - id: rhel7-extras
+          name: RHEL 7 Extras
+          baseurl: http://download-node-02.eng.bos.redhat.com/devel/candidate-trees/EXTRAS-7.4-RHEL-7-20170526.0/compose/Server/ppc64le/os/
+        - id: fastdatapath
+          name: fastdatapath
+          baseurl: http://download-node-02.eng.bos.redhat.com/brewroot/repos/fast-datapath-rhel-7-newarches-build/latest/ppc64le/
+        x86_64:
+        - id: rhel7-base
+          name: RHEL 7 Base OS
+          baseurl: http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel/server/7/7Server/x86_64/os/
+        - id: rhel7-extras
+          name: RHEL 7 Extras
+          baseurl: http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel/server/7/7Server/x86_64/extras/os/
+        - id: fastdatapath
+          name: fastdatapath
+          baseurl: http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel/server/7/7Server/x86_64/fast-datapath/os/
+      Fedora:
+        ppc64le: []
+        x86_64: []
   handlers:
   - name: Restart Docker
     systemd:
@@ -26,16 +63,11 @@
     register: docker_stat
 
   - yum_repository:
-      name: rhel7-base
-      description: RHEL 7 Base OS
-      baseurl: http://download.eng.bos.redhat.com/nightly/RHEL-7.4-20170607.n.0/compose/Server/ppc64le/os
+      name: "{{ item.id }}"
+      description: "{{ item.name }}"
+      baseurl: "{{ item.baseurl }}"
       gpgcheck: no
-
-  - yum_repository:
-      name: rhel7-extras
-      description: RHEL 7 Extras
-      baseurl: http://download-node-02.eng.bos.redhat.com/devel/candidate-trees/EXTRAS-7.4-RHEL-7-20170526.0/compose/Server/ppc64le/os/
-      gpgcheck: no
+    with_items: guest_repos[ansible_distribution][ansible_architecture]
 
   - name: Install the Red Hat CA
     package:
@@ -44,20 +76,22 @@
     notify: Restart Docker
 
 - include: /tmp/openshift-ansible/playbooks/byo/openshift-cluster/config.yml
+  vars_prompt:
+  - name: openshift_deployment_type
+    prompt: OpenShift Deployment Type
+    default: openshift-enterprise
+  vars_prompt:
+  - name: openshift_repo
+    prompt: OpenShift Repo
+    default: http://download-node-02.eng.bos.redhat.com/brewroot/repos/rhaos-3.5-rhel-7-newarches-build/latest/ppc64le/
   vars:
-    openshift_deployment_type: openshift-enterprise
     os_firewall_use_firewalld: True
-    oreg_url: docker-registry.engineering.redhat.com/multi-arch/ppc64le-openshift3-ose-${component}:${version}
-    openshift_cockpit_deployer_prefix: docker-registry.engineering.redhat.com/multi-arch/ppc64le-openshift3-
-    openshift_cockpit_deployer_version: v3.5-12
+    oreg_url: "{{ '' if ansible_architecture == 'x86_64' else 'docker-registry.engineering.redhat.com/multi-arch/ppc64le-openshift3-ose-${component}:${version}' }}"
+    openshift_cockpit_deployer_prefix: "{{ '' if ansible_architecture == 'x86_64' else 'docker-registry.engineering.redhat.com/multi-arch/ppc64le-openshift3-' }}"
+    openshift_cockpit_deployer_version: "{{ '' if ansible_architecture == 'x86_64' else 'v3.5-12' }}"
     openshift_additional_repos:
-    - id: rhaos-multiarch
-      name: rhaos-multiarch
-      baseurl: http://download-node-02.eng.bos.redhat.com/brewroot/repos/rhaos-3.5-rhel-7-newarches-build/latest/ppc64le/
-      gpgcheck: 0
-      enabled: 1
-    - id: fastdatapath-multiarch
-      name: fastdatapath-multiarch
-      baseurl: http://download-node-02.eng.bos.redhat.com/brewroot/repos/fast-datapath-rhel-7-newarches-build/latest/ppc64le/
+    - id: rhaos
+      name: rhaos
+      baseurl: "{{ openshift_repo }}"
       gpgcheck: 0
       enabled: 1

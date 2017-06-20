@@ -26,3 +26,6 @@ kvm_host_repos:
       enabled: 1
       baseurl: http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel/server/7/7Server/x86_64/os
       name: RHEL 7 Base OS
+  Fedora:
+    ppc64le: []
+    x86_64: []
