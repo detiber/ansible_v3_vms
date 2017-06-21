@@ -71,7 +71,6 @@
   - name: openshift_deployment_type
     prompt: OpenShift Deployment Type
     default: openshift-enterprise
-  vars_prompt:
   - name: openshift_repo
     prompt: OpenShift Repo
     default: http://download-node-02.eng.bos.redhat.com/brewroot/repos/rhaos-3.5-rhel-7-newarches-build/latest/ppc64le/
