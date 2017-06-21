@@ -21,12 +21,6 @@
 
 - hosts: all
   vars:
-    cluster_deployment_type: openshift-enterprise
-    cluster_version: 3.5
-    cluster_repo:
-      3.5:
-        RedHat:
-          ppc64le: http://download-node-02.eng.bos.redhat.com/brewroot/repos/rhaos-3.5-rhel-7-newarches-build/lates
     guest_repos:
       RedHat:
         ppc64le:
@@ -59,12 +53,6 @@
       state: restarted
     when: docker_stat.stat.exists
   tasks:
-  - assert:
-      that:
-      - cluster_deployment_type | default('') in ['openshift-enterprise', 'origin']
-  - assert:
-      that:
-      - cluster_repo[cluster_version][ansbile_distribution][ansible_architecture] is defined
   - name: Test if docker present
     stat:
       path: /usr/bin/docker
@@ -86,6 +74,12 @@
 
 - include: /tmp/openshift-ansible/playbooks/byo/openshift-cluster/config.yml
   vars:
+    cluster_deployment_type: openshift-enterprise
+    cluster_version: 3.5
+    cluster_repo:
+      3.5:
+        RedHat:
+          ppc64le: http://download-node-02.eng.bos.redhat.com/brewroot/repos/rhaos-3.5-rhel-7-newarches-build/lates
     os_firewall_use_firewalld: True
     openshift_deployment_type: "{{ cluster_deployment_type }}"
     oreg_url: "{{ '' if ansible_architecture == 'x86_64' else 'docker-registry.engineering.redhat.com/multi-arch/ppc64le-openshift3-ose-${component}:${version}' }}"
@@ -94,6 +88,6 @@
     openshift_additional_repos:
     - id: rhaos
       name: rhaos
-      baseurl: "{{ cluster_repo[cluster_version][ansbile_distribution][ansible_architecture] }}"
+      baseurl: "{{ cluster_repo[cluster_version][ansible_distribution][ansible_architecture] }}"
       gpgcheck: 0
       enabled: 1
