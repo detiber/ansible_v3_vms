@@ -64,7 +64,8 @@
       description: "{{ item.name }}"
       baseurl: "{{ item.baseurl }}"
       gpgcheck: no
-    with_items: guest_repos[ansible_distribution][ansible_architecture]
+    with_items:
+    - "{{ guest_repos[ansible_distribution][ansible_architecture] }}"
 
   - name: Install the Red Hat CA
     package:
