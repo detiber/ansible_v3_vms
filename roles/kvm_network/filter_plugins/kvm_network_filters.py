@@ -18,7 +18,7 @@ def first_available_virbr(ansible_interfaces):
 
 
 def next_available_cidr(ansible_all_ipv4_addresses):
-    one_nine_twos = [int(ONE_NINE_TWO_REGEX.match(net).group(1)) for net in ansible_all_ipv4_addresses if ONE_NINE_TWOS_REGEX.match(net) is not None]
+    one_nine_twos = [int(ONE_NINE_TWO_REGEX.match(net).group(1)) for net in ansible_all_ipv4_addresses if ONE_NINE_TWO_REGEX.match(net) is not None]
     if one_nine_twos:
         return '192.168.{}.0/24'.format(max(one_nine_twos) + 1)
     else:
