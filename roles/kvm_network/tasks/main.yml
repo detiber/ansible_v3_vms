@@ -31,7 +31,7 @@
       no-negcache
       strict-order
       server=/{{ kvm_network_domain }}/{{ kvm_network_gateway }}
-      dest: /etc/NetworkManager/dnsmasq.d/{{ kvm_network_name }}.conf
+    dest: /etc/NetworkManager/dnsmasq.d/{{ kvm_network_name }}.conf
     force: no
   notify: Reload NetworkManager
 
