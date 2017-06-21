@@ -4,7 +4,7 @@
 '''
 Custom filters for use in kvm_network role
 '''
-
+import re
 
 VIRBR_REGEX = re.compile(r'virbr(\d+)')
 ONE_NINE_TWO_REGEX = re.compile(r'192.168.(\d+).\d')
