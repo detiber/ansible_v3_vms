@@ -14,16 +14,7 @@
       [main]
       dns=dnsmasq
     dest: /etc/NetworkManager/conf.d/dnsmasq.conf
-  notify: Restart NetworkManager
-
-- name: Configure DNS settings
-  copy:
-    content: |
-      no-negcache
-      strict-order
-      server=/{{ kvm_network_domain }}/{{ kvm_network_gateway }}
-    dest: /etc/NetworkManager/dnsmasq.d/{{ kvm_network_name }}.conf
-  notify: Restart NetworkManager
+  notify: Reload NetworkManager
 
 - name: Create the libvirt network
   virt_net:
@@ -33,5 +24,15 @@
   notify:
   - Start libvirt Network
   - Auto Start libvirt Network
+
+- name: Configure DNS settings
+  copy:
+    content: |
+      no-negcache
+      strict-order
+      server=/{{ kvm_network_domain }}/{{ kvm_network_gateway }}
+      dest: /etc/NetworkManager/dnsmasq.d/{{ kvm_network_name }}.conf
+    force: no
+  notify: Reload NetworkManager
 
 - meta: flush_handlers
