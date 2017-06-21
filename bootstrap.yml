@@ -11,6 +11,12 @@
   - name: kvm_snapshot_base_os
     prompt: Base OS
     default: rhel7
+  - name: openshift_deployment_type
+    prompt: OpenShift Deployment Type
+    default: openshift-enterprise
+  - name: openshift_repo
+    prompt: OpenShift Repo
+    default: http://download-node-02.eng.bos.redhat.com/brewroot/repos/rhaos-3.5-rhel-7-newarches-build/latest/ppc64le/
   roles:
   - kvm_snapshot_cluster
 
@@ -67,14 +73,8 @@
     notify: Restart Docker
 
 - include: /tmp/openshift-ansible/playbooks/byo/openshift-cluster/config.yml
-  vars_prompt:
-  - name: openshift_deployment_type
-    prompt: OpenShift Deployment Type
-    default: openshift-enterprise
-  - name: openshift_repo
-    prompt: OpenShift Repo
-    default: http://download-node-02.eng.bos.redhat.com/brewroot/repos/rhaos-3.5-rhel-7-newarches-build/latest/ppc64le/
   vars:
+    openshift_deployment_type: "{{ hostvars.localhost.openshift_deployment_type }}"
     os_firewall_use_firewalld: True
     oreg_url: "{{ '' if ansible_architecture == 'x86_64' else 'docker-registry.engineering.redhat.com/multi-arch/ppc64le-openshift3-ose-${component}:${version}' }}"
     openshift_cockpit_deployer_prefix: "{{ '' if ansible_architecture == 'x86_64' else 'docker-registry.engineering.redhat.com/multi-arch/ppc64le-openshift3-' }}"
@@ -82,6 +82,6 @@
     openshift_additional_repos:
     - id: rhaos
       name: rhaos
-      baseurl: "{{ openshift_repo }}"
+      baseurl: "{{ hostvars.localhost.openshift_repo }}"
       gpgcheck: 0
       enabled: 1
