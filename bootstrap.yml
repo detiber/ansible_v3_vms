@@ -10,7 +10,7 @@
   - assert:
       msg: kvm_snapshot_cluster_id is required
       that:
-      - kvm_snapshot_cluster_id is define
+      - kvm_snapshot_cluster_id is defined
 
   - assert:
       msg: "kvm_snapshot_base_os is required and must be one of: rhel7,centos7,fedora25"
