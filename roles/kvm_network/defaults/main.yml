@@ -1,0 +1,3 @@
+---
+kvm_network_cidr: "{{ ansible_all_ipv4_addresses | next_available_cidr }}"
+kvm_network_bridge: "{{ ansible_interfaces | first_available_virbr }}"

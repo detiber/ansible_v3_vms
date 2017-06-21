@@ -1,0 +1,4 @@
+---
+kvm_snapshot_base_name_prefix: "{{ kvm_snapshot_base_os }}{{ '-' ~ ansible_architecture if ansible_architecture != 'x86_64' else '' }}"
+kvm_snapshot_base_vg_prefix: "{{ kvm_snapshot_base_os[:-1] if kvm_snapshot_base_os.startswith('rhel') or kvm_snapshot_base_os.startswith('centos') else kvm_snapshot_base_os[:-2] }}"
+kvm_snapshot_base_vg_suffix: "{{ ansible_hostname }}"

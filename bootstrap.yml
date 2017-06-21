@@ -8,18 +8,9 @@
   - name: kvm_snapshot_cluster_id
     prmopt: Cluster ID
     default: test
-  - name: kvm_snapshot_cluster_bridge
-    prompt: Cluster Bridge
-    default: virbr1
-  - name: kvm_snapshot_cluster_cidr
-    prompt: Cluster CIDR
-    default: 192.168.133.0/24
-  - name: kvm_snapshot_cluster_parent_domain
-    prompt: Cluster Parent Domain
-    default: example.com
-  - name: kvm_snapshot_base_vg
-    prompt: Snapshot Base VG
-    default: fedora_jdetiber
+  - name: kvm_snapshot_base_os
+    prompt: Base OS
+    default: rhel7
   roles:
   - kvm_snapshot_cluster
 

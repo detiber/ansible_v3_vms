@@ -2,17 +2,12 @@
 - assert:
     that:
     - kvm_snapshot_cluster_id is defined
-    - kvm_snapshot_cluster_cidr is defined
-    - kvm_snapshot_cluster_bridge is defined
-    - kvm_snapshot_cluster_parent_domain is defined
 
 - include_role:
     name: kvm_network
   vars:
     kvm_network_name: "{{ kvm_snapshot_cluster_id }}"
     kvm_network_domain: "{{ kvm_snapshot_cluster_domain }}"
-    kvm_network_bridge: "{{ kvm_snapshot_cluster_bridge }}"
-    kvm_network_cidr: "{{ kvm_snapshot_cluster_cidr }}"
 
 - include_role:
     name: kvm_snapshot_guest
