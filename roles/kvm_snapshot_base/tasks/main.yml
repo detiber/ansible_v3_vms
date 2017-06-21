@@ -52,6 +52,6 @@
 
   - name: Modify the base image
     command:
-      virt-sysprep -d rhel7-base
+      virt-sysprep -d "{{ kvm_snapshot_base_name }}"
       --ssh-inject root:file:/root/.ssh/id_rsa.pub
       --selinux-relabel
