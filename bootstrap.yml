@@ -26,10 +26,10 @@
         ppc64le:
         - id: rhel7-base
           name: RHEL 7 Base OS
-          baseurl: http://download.eng.bos.redhat.com/nightly/RHEL-7.4-20170607.n.0/compose/Server/ppc64le/os
+          baseurl: http://download.eng.bos.redhat.com/nightly/latest-RHEL-7/compose/Server/ppc64le/os
         - id: rhel7-extras
           name: RHEL 7 Extras
-          baseurl: http://download-node-02.eng.bos.redhat.com/devel/candidate-trees/EXTRAS-7.4-RHEL-7-20170526.0/compose/Server/ppc64le/os/
+          baseurl: http://download-node-02.eng.bos.redhat.com/nightly/EXTRAS-RHEL-7.4/latest-EXTRAS-7-RHEL-7/compose/Server/ppc64le/os/
         - id: fastdatapath
           name: fastdatapath
           baseurl: http://download-node-02.eng.bos.redhat.com/brewroot/repos/fast-datapath-rhel-7-newarches-build/latest/ppc64le/
@@ -75,11 +75,14 @@
 - include: /tmp/openshift-ansible/playbooks/byo/openshift-cluster/config.yml
   vars:
     cluster_deployment_type: openshift-enterprise
-    cluster_version: 3.5
+    cluster_version: 3.6
     cluster_repo:
       3.5:
         RedHat:
           ppc64le: http://download-node-02.eng.bos.redhat.com/brewroot/repos/rhaos-3.5-rhel-7-newarches-build/latest/ppc64le
+      3.6:
+        RedHat:
+          ppc64le: http://download-node-02.eng.bos.redhat.com/brewroot/repos/rhaos-3.6-rhel-7-newarches-build/latest/ppc64le
     os_firewall_use_firewalld: True
     openshift_deployment_type: "{{ cluster_deployment_type }}"
     oreg_url: "{{ '' if ansible_architecture == 'x86_64' else 'docker-registry.engineering.redhat.com/multi-arch/ppc64le-openshift3-ose-${component}:${version}' }}"
