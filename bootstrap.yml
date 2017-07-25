@@ -88,6 +88,7 @@
     oreg_url: "{{ '' if ansible_architecture == 'x86_64' else 'docker-registry.engineering.redhat.com/multi-arch/ppc64le-openshift3-ose-${component}:${version}' }}"
     openshift_cockpit_deployer_prefix: "{{ '' if ansible_architecture == 'x86_64' else 'docker-registry.engineering.redhat.com/multi-arch/ppc64le-openshift3-' }}"
     openshift_cockpit_deployer_version: "{{ '' if ansible_architecture == 'x86_64' else 'v3.5-12' }}"
+    openshift_disable_check: disk_availability,docker_image_availability,docker_storage
     openshift_additional_repos:
     - id: rhaos
       name: rhaos
