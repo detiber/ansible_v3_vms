@@ -82,7 +82,7 @@
           ppc64le: http://download-node-02.eng.bos.redhat.com/brewroot/repos/rhaos-3.5-rhel-7-newarches-build/latest/ppc64le
       3.6:
         RedHat:
-          ppc64le: http://download-node-02.eng.bos.redhat.com/brewroot/repos/rhaos-3.6-rhel-7-newarches-build/latest/ppc64le
+          ppc64le: http://download-node-02.eng.bos.redhat.com/rcm-guest/puddles/RHAOS-multiarch/AtomicOpenShift-multiarch/3.6/latest/ppc64le/os
     os_firewall_use_firewalld: True
     openshift_deployment_type: "{{ cluster_deployment_type }}"
     oreg_url: "{{ '' if ansible_architecture == 'x86_64' else 'docker-registry.engineering.redhat.com/multi-arch/ppc64le-openshift3-ose-${component}:${version}' }}"
