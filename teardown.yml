@@ -4,16 +4,17 @@
   hosts: localhost
   connection: local
   become: yes
-  vars_prompt:
-  - name: kvm_snapshot_cluster_id
-    prmopt: Cluster ID
-    default: test
-  - name: kvm_snapshot_cluster_parent_domain
-    prompt: Cluster Parent Domain
-    default: example.com
-  - name: kvm_snapshot_base_vg
-    prompt: Snapshot Base VG
-    default: fedora_jdetiber
+  vars:
+    kvm_snapshot_base_os: rhel7
+  pre_tasks:
+  - assert:
+      msg: kvm_snapshot_cluster_id is required
+      that:
+      - kvm_snapshot_cluster_id is defined
+  - assert:
+      msg: "kvm_snapshot_base_os is required and must be one of: rhel7,centos7,fedora25"
+      that:
+      - kvm_snapshot_base_os | default('') in ['rhel7', 'centos7', 'fedora25']
   tasks:
   - include_role:
       name: kvm_snapshot_cluster
