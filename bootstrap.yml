@@ -83,11 +83,18 @@
       3.6:
         RedHat:
           ppc64le: http://download-node-02.eng.bos.redhat.com/rcm-guest/puddles/RHAOS-multiarch/AtomicOpenShift-multiarch/3.6/latest/ppc64le/os
+    cockpit_deployer_version:
+      3.5:
+        RedHat:
+          ppc64le: v3.5-12
+      3.6:
+        RedHat:
+          ppc64le: v3.6.173.0.1
     os_firewall_use_firewalld: True
     openshift_deployment_type: "{{ cluster_deployment_type }}"
     oreg_url: "{{ '' if ansible_architecture == 'x86_64' else 'docker-registry.engineering.redhat.com/multi-arch/ppc64le-openshift3-ose-${component}:${version}' }}"
     openshift_cockpit_deployer_prefix: "{{ '' if ansible_architecture == 'x86_64' else 'docker-registry.engineering.redhat.com/multi-arch/ppc64le-openshift3-' }}"
-    openshift_cockpit_deployer_version: "{{ '' if ansible_architecture == 'x86_64' else 'v3.5-12' }}"
+    openshift_cockpit_deployer_version: "{{ '' if ansible_architecture == 'x86_64' else cockpit_deployer_version[cluster_version][ansible_distribution][ansible_architecture] }}"
     openshift_disable_check: disk_availability,docker_image_availability,docker_storage
     openshift_additional_repos:
     - id: rhaos
