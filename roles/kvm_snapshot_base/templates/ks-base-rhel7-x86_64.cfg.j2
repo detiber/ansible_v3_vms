@@ -2,7 +2,7 @@
 # System authorization information
 auth --enableshadow --passalgo=sha512
 # Use network installation
-url --url="http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel/power-le/7/7Server/ppc64le/os/"
+url --url="{{ kvm_snapshot_base_repos[kvm_snapshot_base_os]['install'] }}"
 # Use text mode install
 text
 # Run the Setup Agent on first boot
@@ -33,8 +33,8 @@ clearpart --all --initlabel --drives=sda
 part prepboot --fstype=prepboot --asprimary --size=8 --ondrive=sda
 part /boot --size 1024 --fstype xfs --asprimary --ondrive=sda
 part pv.01 --size 20480 --asprimary --grow --ondrive=sda
-volgroup rhel pv.01
-logvol / --vgname rhel --size=15360 --name=root --fstype=xfs
+volgroup vg1 pv.01
+logvol / --vgname vg1 --size=15360 --name=root --fstype=xfs
 
 shutdown
 

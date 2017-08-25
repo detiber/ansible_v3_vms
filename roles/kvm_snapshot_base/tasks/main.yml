@@ -31,17 +31,17 @@
     when: kvm_snapshot_base_name not in ansible_lvm.lvs.keys()
 
   - name: Copy the kickstart file
-    copy:
-      src: ks-base.cfg
+    template:
+      src: ks-base-{{ kvm_snapshot_base_os }}-{{ kvm_snapshot_base_arch }}.cfg.j2
       dest: /tmp/ks-base.cfg
 
   - name: Install the VM
     command: >
       virt-install --name {{ kvm_snapshot_base_name }}
       --vcpus=24 --ram=4096
-      --os-type=linux --os-variant=rhel7
+      --os-type=linux --os-variant={{ 'rhel7' if kvm_snapshot_base_os in ['rhel7', 'centos7'] else kvm_snapshot_base_os }}
       --controller type=scsi,model=virtio-scsi
-      --location=http://download-node-02.eng.bos.redhat.com/composes/released/RHEL-7/7.3/Server/ppc64le/os/
+      --location={{ kvm_snapshot_base_repos[kvm_snapshot_base_os]['netboot'] }}
       --disk path=/dev/{{ kvm_snapshot_base_vg }}/{{ kvm_snapshot_base_name }},cache=none,io=native,discard=unmap,bus=scsi
       --network network=default
       --nographics

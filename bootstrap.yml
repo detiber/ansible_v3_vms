@@ -13,7 +13,7 @@
       - kvm_snapshot_cluster_id is defined
 
   - assert:
-      msg: "kvm_snapshot_base_os is required and must be one of: rhel7,centos7,fedora25"
+      msg: "kvm_snapshot_base_os is required and must be one of: rhel7,centos7,fedora25,fedora26"
       that:
       - kvm_snapshot_base_os | default('') in ['rhel7', 'centos7', 'fedora25']
   roles:

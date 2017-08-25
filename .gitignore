@@ -1,2 +1,3 @@
 generated_files
 .idea
+*.pyc

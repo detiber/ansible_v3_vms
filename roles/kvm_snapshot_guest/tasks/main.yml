@@ -22,7 +22,7 @@
   command: >
     virt-install --name {{ item }}
     --vcpus=24 --ram=4096
-    --os-type=linux --os-variant=rhel7
+    --os-type=linux --os-variant={{ 'rhel7' if kvm_snapshot_base_os in ['rhel7', 'centos7'] else kvm_snapshot_base_os }}
     --controller type=scsi,model=virtio-scsi
     --disk path=/dev/{{ kvm_snapshot_base_vg }}/{{ item }},cache=none,io=native,discard=unmap,bus=scsi
     --network network={{ kvm_snapshot_cluster_id }}

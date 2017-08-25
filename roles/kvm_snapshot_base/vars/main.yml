@@ -1,4 +1,25 @@
 ---
-kvm_snapshot_base_name_prefix: "{{ kvm_snapshot_base_os }}{{ '-' ~ ansible_architecture if ansible_architecture != 'x86_64' else '' }}"
-kvm_snapshot_base_vg_prefix: "{{ kvm_snapshot_base_os[:-1] if kvm_snapshot_base_os.startswith('rhel') or kvm_snapshot_base_os.startswith('centos') else kvm_snapshot_base_os[:-2] }}"
+kvm_snapshot_base_name_prefix: "{{ kvm_snapshot_base_os }}{{ '-' ~ kvm_snapshot_base_arch if kvm_snapshot_base_arch !=  ansible_architecture else '' }}"
+kvm_snapshot_base_vg_os: "{{ 'rhel' if ansible_distribution == 'RedHat' else ansible_distribution | lower }}"
+kvm_snapshot_base_vg_os_version: "{{ ansible_distribution_major_version if kvm_snapshot_base_vg_os in ['rhel', 'centos'] else '' }}"
+kvm_snapshot_base_vg_prefix: "{{ kvm_snapshot_base_vg_os ~ kvm_snapshot_base_vg_os_version }}"
 kvm_snapshot_base_vg_suffix: "{{ ansible_hostname }}"
+kvm_snapshot_base_netboot_fedora_base_path: http://download-node-02.eng.bos.redhat.com/composes/released/
+kvm_snapshot_base_netboot_fedora_version_dir: "F{{ kvm_snapshot_base_os [-2:] }}{{ '-Secondary' if kvm_snapshot_base_arch in ['aarch64', 'ppc64le', 's390x'] else '' }}"
+kvm_snapshot_base_netboot_fedora_repo: "{{ kvm_snapshot_base_netboot_fedora_base_path ~ kvm_snapshot_base_netboot_fedora_version_dir }}/GOLD/Server/{{ kvm_snapshot_base_arch }}/os/"
+kvm_snapshot_base_netboot_centos_base_path: http://mirror.centos.org/
+kvm_snapshot_base_netboot_centos_arch_dir: "{{ 'centos' if kvm_snapshot_base_arch == 'x86_64' else 'altarch' }}"
+kvm_snapshot_base_netboot_centos_repo: "{{ kvm_snapshot_base_netboot_centos_base_path ~ kvm_snapshot_base_netboot_centos_arch_dir }}/7/os/{{ kvm_snapshot_base_arch }}/"
+kvm_snapshot_base_repos:
+  rhel7:
+    netboot: http://download-node-02.eng.bos.redhat.com/composes/released/RHEL-7/7.4/Server/{{ kvm_snapshot_base_arch }}/os/
+    install: http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel/power-le/7/7Server/ppc64le/os/
+  centos7:
+    netboot: "{{ kvm_snapshot_base_netboot_centos_repo }}"
+    install: "{{ kvm_snapshot_base_netboot_centos_repo }}"
+  fedora25:
+    netboot: "{{ kvm_snapshot_base_netboot_fedora_repo }}"
+    install: "{{ kvm_snapshot_base_netboot_fedora_repo }}"
+  fedora26:
+    netboot: "{{ kvm_snapshot_base_netboot_fedora_repo }}"
+    install: "{{ kvm_snapshot_base_netboot_fedora_repo }}"

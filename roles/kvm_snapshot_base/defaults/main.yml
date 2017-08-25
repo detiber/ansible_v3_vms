@@ -1,5 +1,6 @@
 ---
 kvm_snapshot_base_os: rhel7
+kvm_snapshot_base_arch: "{{ ansible_architecture }}"
 kvm_snapshot_base_name: "{{ kvm_snapshot_base_name_prefix }}-base"
 kvm_snapshot_base_vg: "{{ kvm_snapshot_base_vg_prefix }}_{{ kvm_snapshot_base_vg_suffix }}"
 kvm_snapshot_base_thin_pool: libvirt-pool
