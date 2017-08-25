@@ -1,51 +1,47 @@
 #! ansible-playbook -K
 ---
-- name: Bootstrap the base image
+- name: Checkout openshift-ansible
+  hosts: localhost
+  connection: local
+  tasks:
+  - name: Pull openshift-ansible from git
+    git:
+      repo: https://github.com/openshift/openshift-ansible.git
+      dest: openshift-ansible
+
+- name: Bootstrap the cluster
   hosts: localhost
   connection: local
   become: yes
-  vars:
-    kvm_snapshot_base_os: rhel7
-  pre_tasks:
-  - assert:
-      msg: kvm_snapshot_cluster_id is required
-      that:
-      - kvm_snapshot_cluster_id is defined
-
-  - assert:
-      msg: "kvm_snapshot_base_os is required and must be one of: rhel7,centos7,fedora25,fedora26"
-      that:
-      - kvm_snapshot_base_os | default('') in ['rhel7', 'centos7', 'fedora25']
   roles:
   - kvm_snapshot_cluster
 
-- hosts: all
+- name: Run pre-req steps on cluster hosts
+  hosts: bootstrap_hosts
   vars:
+    rhel_repo_base: http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel/
+    rhel_repo_arch_dir_map:
+      x86_64: server
+      ppc64le: power-le
+      aarch64: arm-64
+      s390x: system-z
+    rhel_repo_common: "{{ rhel_repo_base ~ rhel_repo_arch_dir_map[ansible_architecture] }}/7/7Server/{{ ansible_architecture }}"
+    rhel_base_repo: "{{ rhel_repo_common }}/os"
+    # TODO: handle arches that do not have extras published (aarch64)
+    rhel_extras_repo: "{{ rhel_repo_common }}/extras/os"
+    # TODO: handle alt arch support for fast-datapath
+    rhel_fastdatapath_repo: "{{ rhel_repo_common }}/fast-datapath/os"
     guest_repos:
       RedHat:
-        ppc64le:
-        - id: rhel7-base
-          name: RHEL 7 Base OS
-          baseurl: http://download.eng.bos.redhat.com/nightly/latest-RHEL-7/compose/Server/ppc64le/os
-        - id: rhel7-extras
-          name: RHEL 7 Extras
-          baseurl: http://download-node-02.eng.bos.redhat.com/nightly/EXTRAS-RHEL-7.4/latest-EXTRAS-7-RHEL-7/compose/Server/ppc64le/os/
-        - id: fastdatapath
-          name: fastdatapath
-          baseurl: http://download-node-02.eng.bos.redhat.com/brewroot/repos/fast-datapath-rhel-7-newarches-build/latest/ppc64le/
-        x86_64:
-        - id: rhel7-base
-          name: RHEL 7 Base OS
-          baseurl: http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel/server/7/7Server/x86_64/os/
-        - id: rhel7-extras
-          name: RHEL 7 Extras
-          baseurl: http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel/server/7/7Server/x86_64/extras/os/
-        - id: fastdatapath
-          name: fastdatapath
-          baseurl: http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel/server/7/7Server/x86_64/fast-datapath/os/
-      Fedora:
-        ppc64le: []
-        x86_64: []
+      - id: rhel_base
+        name: rhel_base
+        baseurl: "{{ rhel_base_repo }}"
+      - id: rhel_extras
+        name: rhel_extras
+        baseurl: "{{ rhel_extras_repo }}"
+      - id: rhel_fastdatapath
+        name: rhel_fastdatapath
+        baseurl: "{{ rhel_fastdatapath_repo }}"
   handlers:
   - name: Restart Docker
     systemd:
@@ -64,41 +60,10 @@
       baseurl: "{{ item.baseurl }}"
       gpgcheck: no
     with_items:
-    - "{{ guest_repos[ansible_distribution][ansible_architecture] }}"
+    - "{{ guest_repos[ansible_distribution] | default([]) }}"
 
   - name: Install the Red Hat CA
     package:
       name: http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/redhat-internal-cert-install-0.1-7.el7.csb.noarch.rpm
       state: present
     notify: Restart Docker
-
-- include: /tmp/openshift-ansible/playbooks/byo/openshift-cluster/config.yml
-  vars:
-    cluster_deployment_type: openshift-enterprise
-    cluster_version: 3.6
-    cluster_repo:
-      3.5:
-        RedHat:
-          ppc64le: http://download-node-02.eng.bos.redhat.com/brewroot/repos/rhaos-3.5-rhel-7-newarches-build/latest/ppc64le
-      3.6:
-        RedHat:
-          ppc64le: http://download-node-02.eng.bos.redhat.com/rcm-guest/puddles/RHAOS-multiarch/AtomicOpenShift-multiarch/3.6/latest/ppc64le/os
-    cockpit_deployer_version:
-      3.5:
-        RedHat:
-          ppc64le: v3.5-12
-      3.6:
-        RedHat:
-          ppc64le: v3.6.173.0.1
-    os_firewall_use_firewalld: True
-    openshift_deployment_type: "{{ cluster_deployment_type }}"
-    oreg_url: "{{ '' if ansible_architecture == 'x86_64' else 'docker-registry.engineering.redhat.com/multi-arch/ppc64le-openshift3-ose-${component}:${version}' }}"
-    openshift_cockpit_deployer_prefix: "{{ '' if ansible_architecture == 'x86_64' else 'docker-registry.engineering.redhat.com/multi-arch/ppc64le-openshift3-' }}"
-    openshift_cockpit_deployer_version: "{{ '' if ansible_architecture == 'x86_64' else cockpit_deployer_version[cluster_version][ansible_distribution][ansible_architecture] }}"
-    openshift_disable_check: disk_availability,docker_image_availability,docker_storage
-    openshift_additional_repos:
-    - id: rhaos
-      name: rhaos
-      baseurl: "{{ cluster_repo[cluster_version][ansible_distribution][ansible_architecture] }}"
-      gpgcheck: 0
-      enabled: 1

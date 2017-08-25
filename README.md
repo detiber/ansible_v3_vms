@@ -1,4 +1,20 @@
 # ansible_v3_vms
+##Create Cluster
+###Basic Usage with cluster id of test
+```
+ansible-playbook bootstrap.yml -e kvm_snapshot_cluster_id=test -K
+ansible-playbook -i inventory/cluster-test/hosts openshift-ansible/playbooks/byo/openshift-cluster/config.yml
 
-- Requires an lvm thinpool to be pre-configured, and a base image that lives on a thin lv (specified by the base_image variable).
-- Volume group containing the thinpool is specified in inventory/group_vars/all
+```
+###Variables
+| variable                 | default                      | description |
+|--------------------------|------------------------------|-------------|
+| kvm_snapshot_cluster_id  | None                         | Unique cluster id (required) |
+| kvm_snapshot_base_os     | rhel7                        | Base OS to build cluster on (rhel7, centos7, fedora25, fedora26) |
+| kvm_snapshot_base_arch   | "{{ ansible_architecture }}" | Guest VM Arch to use for cluster |
+
+
+##Tear Down Cluster
+```
+ansible-playbook teardown.yml -e kvm_snapshot_cluster_id=test -K
+```

@@ -1,2 +1,17 @@
 ---
 kvm_snapshot_cluster_parent_domain: example.com
+kvm_snapshot_cluster_masters:
+- master
+kvm_snapshot_cluster_masters_groups:
+- etcd
+- masters
+- nodes
+kvm_snapshot_cluster_infra:
+- infra
+kvm_snapshot_cluster_infra_groups:
+- nodes
+kvm_snapshot_cluster_app:
+- node1
+- node2
+kvm_snapshot_cluster_app_groups:
+- nodes

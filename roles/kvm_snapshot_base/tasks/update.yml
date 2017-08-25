@@ -1,9 +1,4 @@
 ---
-- assert:
-    msg: "kvm_snapshot_base_os is required and must be one of: rhel7,centos7,fedora25,fedora26"
-    that:
-    - kvm_snapshot_base_os | default('') in ['rhel7', 'centos7', 'fedora25', 'fedora26']
-
 - name: Check for existence of ssh key
   stat:
     path: /root/.ssh/id_rsa
@@ -43,7 +38,7 @@
   - name: Install the VM
     command: >
       virt-install --name {{ kvm_snapshot_base_name }}
-      --vcpus=1 --ram=4096
+      --vcpus=24 --ram=4096
       --os-type=linux --os-variant={{ 'rhel7' if kvm_snapshot_base_os in ['rhel7', 'centos7'] else kvm_snapshot_base_os }}
       --controller type=scsi,model=virtio-scsi
       --location={{ kvm_snapshot_base_repos[kvm_snapshot_base_os]['netboot'] }}
@@ -52,12 +47,11 @@
       --nographics
       --initrd-inject /tmp/ks-base.cfg
       --extra-args="inst.ks=file:/ks-base.cfg ip=dhcp console=tty0 console=ttyS0,115200n8"
-      --wait 30
+      --wait 20
       --noreboot
 
   - name: Modify the base image
     command:
       virt-sysprep -d "{{ kvm_snapshot_base_name }}"
-      --ssh-inject root:file:/{{ ansible_user_dir }}/.ssh/id_rsa.pub
-      --edit /etc/lvm/lvm.conf:'s/issue_discards = 0/issue_discards = 1/'
+      --ssh-inject root:file:/root/.ssh/id_rsa.pub
       --selinux-relabel

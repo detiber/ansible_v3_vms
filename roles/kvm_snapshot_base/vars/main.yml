@@ -10,10 +10,17 @@ kvm_snapshot_base_netboot_fedora_repo: "{{ kvm_snapshot_base_netboot_fedora_base
 kvm_snapshot_base_netboot_centos_base_path: http://mirror.centos.org/
 kvm_snapshot_base_netboot_centos_arch_dir: "{{ 'centos' if kvm_snapshot_base_arch == 'x86_64' else 'altarch' }}"
 kvm_snapshot_base_netboot_centos_repo: "{{ kvm_snapshot_base_netboot_centos_base_path ~ kvm_snapshot_base_netboot_centos_arch_dir }}/7/os/{{ kvm_snapshot_base_arch }}/"
+kvm_snapshot_base_install_rhel_base_path: http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel/
+kvm_snapshot_base_install_rhel_arch_dir_map:
+  x86_64: server
+  ppc64le: power-le
+  aarch64: arm-64
+  s390x: system-z
+kvm_snapshot_base_install_rhel_repo: "{{ kvm_snapshot_base_install_rhel_base_path ~ kvm_snapshot_base_install_rhel_arch_dir_map[kvm_snapshot_base_arch] }}/7/7Server/{{ kvm_snapshot_base_arch }}/os/"
 kvm_snapshot_base_repos:
   rhel7:
     netboot: http://download-node-02.eng.bos.redhat.com/composes/released/RHEL-7/7.4/Server/{{ kvm_snapshot_base_arch }}/os/
-    install: http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel/power-le/7/7Server/ppc64le/os/
+    install: "{{ kvm_snapshot_base_install_rhel_repo }}"
   centos7:
     netboot: "{{ kvm_snapshot_base_netboot_centos_repo }}"
     install: "{{ kvm_snapshot_base_netboot_centos_repo }}"

@@ -21,7 +21,7 @@
 - name: Create the VMs
   command: >
     virt-install --name {{ item }}
-    --vcpus=24 --ram=4096
+    --vcpus={{ kvm_snapshot_guest_vcpus }} --ram={{ kvm_snapshot_guest_ram }}
     --os-type=linux --os-variant={{ 'rhel7' if kvm_snapshot_base_os in ['rhel7', 'centos7'] else kvm_snapshot_base_os }}
     --controller type=scsi,model=virtio-scsi
     --disk path=/dev/{{ kvm_snapshot_base_vg }}/{{ item }},cache=none,io=native,discard=unmap,bus=scsi
@@ -51,12 +51,11 @@
 - name: Wait for hosts to be available
   wait_for: port=22 host={{ item }}.{{ kvm_snapshot_cluster_domain }}
   with_items:
-  - "{{ kvm_snapshot_guest_hostnames }}"
+    - "{{ kvm_snapshot_guest_hostnames }}"
 
 - name: Add hosts to proper groups
   add_host:
-    name: "{{ item }}"
-    groups: "{{ kvm_snapshot_guest_group_mappings.master if item.startswith('master') else kvm_snapshot_guest_group_mappings.node }}"
-    ansible_ssh_host: "{{ item }}.{{ kvm_snapshot_cluster_domain }}"
+    name: "{{ item }}.{{ kvm_snapshot_cluster_domain }}"
+    groups: bootstrap_hosts
   with_items:
   - "{{ kvm_snapshot_guest_hostnames }}"

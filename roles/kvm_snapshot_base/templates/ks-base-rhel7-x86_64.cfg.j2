@@ -34,7 +34,7 @@ part prepboot --fstype=prepboot --asprimary --size=8 --ondrive=sda
 part /boot --size 1024 --fstype xfs --asprimary --ondrive=sda
 part pv.01 --size 20480 --asprimary --grow --ondrive=sda
 volgroup vg1 pv.01
-logvol / --vgname vg1 --size=15360 --name=root --fstype=xfs
+logvol / --vgname vg1 --size=10240 --name=root --fstype=xfs
 
 shutdown
 

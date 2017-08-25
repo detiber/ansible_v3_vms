@@ -12,7 +12,63 @@
 - include_role:
     name: kvm_snapshot_guest
   vars:
-    kvm_snapshot_guest_hostnames:
-    - master
-    - node1
-    - node2
+    kvm_snapshot_guest_hostnames: "{{ kvm_snapshot_cluster_masters | union(kvm_snapshot_cluster_infra) | union(kvm_snapshot_cluster_app) }}"
+
+- name: Create cluster inventory directories
+  file:
+    path: "inventory/cluster-{{ kvm_snapshot_cluster_id }}/group_vars"
+    state: directory
+
+- name: Create cluster inventory
+  template:
+    src: hosts.j2
+    dest: "inventory/cluster-{{ kvm_snapshot_cluster_id }}/hosts"
+
+- name: Create the OSEv3 group_vars
+  copy:
+    content: "{{ osev3_vars | to_nice_yaml }}"
+    dest: "inventory/cluster-{{ kvm_snapshot_cluster_id }}/group_vars/OSEv3.yml"
+  vars:
+    cluster_deployment_type: openshift-enterprise
+    cluster_version: 3.6
+    cluster_repo_source: multiarch_puddle # aos_released, aos_puddle, aos_errata_puddle, multiarch_puddle
+    cluster_registry:
+      aos_released: ''
+      aos_puddle: ''
+      aos_errata_puddle: "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/openshift3/ose-${component}:${version}"
+      multiarch_puddle: "docker-registry.engineering.redhat.com/multi-arch/{{ kvm_snapshot_base_arch }}-openshift3-ose-${component}:${version}"
+    cluster_repo:
+      aos_released: http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel/server/7/7Server/{{ kvm_snapshot_base_arch }}/ose/{{ cluster_version }}/os
+      aos_puddle: http://download.eng.bos.redhat.com/rcm-guest/puddles/RHAOS/AtomicOpenShift/{{ cluster_version }}/latest/{{ kvm_snapshot_base_arch }}
+      aos_errata_puddle: http://download.eng.bos.redhat.com/rcm-guest/puddles/RHAOS/AtomicOpenShift-errata/{{ cluster_version }}/latest/{{ kvm_snapshot_base_arch }}
+      multiarch_puddle: http://download.eng.bos.redhat.com/rcm-guest/puddles/RHAOS-multiarch/AtomicOpenShift-multiarch/{{ cluster_version }}/latest/{{ kvm_snapshot_base_arch }}
+    osev3_vars:
+      openshift_additional_repos:
+      - id: rhaos
+        name: rhaos
+        baseurl: "{{ cluster_repo[cluster_repo_source] }}"
+        gpgcheck: 0
+        enabled: 1
+      openshift_deployment_type: "{{ cluster_deployment_type }}"
+      openshift_disable_check: disk_availability,docker_image_availability,docker_storage,memory_availability,package_availability
+      openshift_master_identity_providers:
+      - name: allow_all
+        login: true
+        challenge: true
+        kind: AllowAllPasswordIdentityProvider
+      openshift_set_hostname: False
+      oreg_url: "{{ cluster_registry[cluster_repo_source] }}"
+      os_firewall_use_firewalld: True
+
+- name: Create the host group group_vars
+  copy:
+    content: "{{ item.grp_vars | default({}) | to_nice_yaml }}"
+    dest: "inventory/cluster-{{ kvm_snapshot_cluster_id }}/group_vars/{{item.name}}.yml"
+  with_items:
+  - name: masters
+  - name: master_nodes
+  - name: infra_nodes
+    grp_vars:
+      openshift_node_labels:
+        region: infra
+  - name: app_nodes

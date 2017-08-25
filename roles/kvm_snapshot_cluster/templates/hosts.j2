@@ -1,0 +1,29 @@
+[OSEv3:children]
+etcd
+masters
+nodes
+
+[etcd]
+{% for host in kvm_snapshot_cluster_masters %}
+{{ host }}.{{ kvm_snapshot_cluster_domain }}
+{% endfor %}
+
+[masters]
+{% for host in kvm_snapshot_cluster_masters %}
+{{ host }}.{{ kvm_snapshot_cluster_domain }}
+{% endfor %}
+
+[nodes:children]
+masters
+infra_nodes
+app_nodes
+
+[infra_nodes]
+{% for host in kvm_snapshot_cluster_infra %}
+{{ host }}.{{ kvm_snapshot_cluster_domain }}
+{% endfor %}
+
+[app_nodes]
+{% for host in kvm_snapshot_cluster_app %}
+{{ host }}.{{ kvm_snapshot_cluster_domain }}
+{% endfor %}

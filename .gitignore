@@ -1,3 +1,4 @@
 generated_files
 .idea
 *.pyc
+openshift-ansible
