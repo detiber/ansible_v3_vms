@@ -29,8 +29,8 @@
     rhel_base_repo: "{{ rhel_repo_common }}/os"
     # TODO: handle arches that do not have extras published (aarch64)
     rhel_extras_repo: "{{ rhel_repo_common }}/extras/os"
-    # TODO: handle alt arch support for fast-datapath
-    rhel_fastdatapath_repo: "{{ rhel_repo_common }}/fast-datapath/os"
+    #rhel_fastdatapath_repo: "{{ rhel_repo_common }}/fast-datapath/os"
+    rhel_fastdatapath_repo: "http://download.eng.bos.redhat.com/brewroot/repos/fast-datapath-rhel-7-build/latest/{{ ansible_architecture }}"
     guest_repos:
       RedHat:
       - id: rhel_base
