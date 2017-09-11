@@ -2,7 +2,7 @@
 kvm_snapshot_base_name_prefix: "{{ kvm_snapshot_base_os }}{{ '-' ~ kvm_snapshot_base_arch if kvm_snapshot_base_arch !=  ansible_architecture else '' }}"
 kvm_snapshot_base_vg_os: "{{ 'rhel' if ansible_distribution == 'RedHat' else ansible_distribution | lower }}"
 kvm_snapshot_base_vg_os_version: "{{ ansible_distribution_major_version if kvm_snapshot_base_vg_os in ['rhel', 'centos'] else '' }}"
-kvm_snapshot_base_vg_prefix: "{{ kvm_snapshot_base_vg_os ~ kvm_snapshot_base_vg_os_version }}"
+kvm_snapshot_base_vg_prefix: "{{ kvm_snapshot_base_vg_os if kvm_snaphost_base_vg_os == 'rhel' else kvm_snapshot_base_vg_os ~ kvm_snapshot_base_vg_os_version }}"
 kvm_snapshot_base_vg_suffix: "{{ ansible_hostname }}"
 kvm_snapshot_base_netboot_fedora_base_path: http://download-node-02.eng.bos.redhat.com/composes/released/
 kvm_snapshot_base_netboot_fedora_version_dir: "F{{ kvm_snapshot_base_os [-2:] }}{{ '-Secondary' if kvm_snapshot_base_arch in ['aarch64', 'ppc64le', 's390x'] else '' }}"
