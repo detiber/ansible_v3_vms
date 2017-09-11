@@ -41,7 +41,7 @@
       aos_released: http://pulp.dist.prod.ext.phx2.redhat.com/content/dist/rhel/server/7/7Server/{{ kvm_snapshot_base_arch }}/ose/{{ cluster_version }}/os
       aos_puddle: http://download.eng.bos.redhat.com/rcm-guest/puddles/RHAOS/AtomicOpenShift/{{ cluster_version }}/latest/{{ kvm_snapshot_base_arch }}
       aos_errata_puddle: http://download.eng.bos.redhat.com/rcm-guest/puddles/RHAOS/AtomicOpenShift-errata/{{ cluster_version }}/latest/{{ kvm_snapshot_base_arch }}
-      multiarch_puddle: http://download.eng.bos.redhat.com/rcm-guest/puddles/RHAOS-multiarch/AtomicOpenShift-multiarch/{{ cluster_version }}/latest/{{ kvm_snapshot_base_arch }}
+      multiarch_puddle: http://download.eng.bos.redhat.com/rcm-guest/puddles/RHAOS-multiarch/AtomicOpenShift-multiarch/{{ cluster_version }}/latest/{{ kvm_snapshot_base_arch }}/os
     osev3_vars:
       openshift_additional_repos:
       - id: rhaos
