@@ -37,6 +37,8 @@
   command: >
     virt-customize -d {{ item }}
     --hostname {{ item }}.{{ kvm_snapshot_cluster_domain }}
+    --ssh-inject root:file:/{{ ansible_user_dir }}/.ssh/id_rsa.pub
+    --edit /etc/lvm/lvm.conf:'s/issue_discards = 0/issue_discards = 1/'
   when: item not in vm_list.list_vms
   with_items:
   - "{{ kvm_snapshot_guest_hostnames }}"
