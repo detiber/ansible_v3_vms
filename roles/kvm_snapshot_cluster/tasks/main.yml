@@ -59,6 +59,7 @@
       openshift_set_hostname: False
       oreg_url: "{{ cluster_registry[cluster_repo_source] }}"
       os_firewall_use_firewalld: True
+      osn_storage_plugin_deps: []
 
 - name: Create the host group group_vars
   copy:
