@@ -50,7 +50,7 @@
         gpgcheck: 0
         enabled: 1
       openshift_deployment_type: "{{ cluster_deployment_type }}"
-      openshift_disable_check: disk_availability,docker_image_availability,docker_storage,memory_availability,package_availability
+      openshift_disable_check: disk_availability,docker_image_availability,docker_storage,memory_availability,package_availability,package_version
       openshift_master_identity_providers:
       - name: allow_all
         login: true
