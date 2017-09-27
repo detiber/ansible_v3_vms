@@ -60,6 +60,7 @@
       oreg_url: "{{ cluster_registry[cluster_repo_source] }}"
       os_firewall_use_firewalld: True
       osn_storage_plugin_deps: []
+      openshift_docker_additional_registries: "{{ 'registry.access.redhat.com' if cluster_deployment_type == 'openshift-enterprise' else [] }}"
 
 - name: Create the host group group_vars
   copy:
