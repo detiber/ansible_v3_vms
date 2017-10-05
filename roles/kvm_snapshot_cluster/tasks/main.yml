@@ -31,8 +31,9 @@
   vars:
     cluster_deployment_type: openshift-enterprise
     cluster_version: 3.6
-    cluster_repo_source: multiarch_puddle # aos_released, aos_puddle, aos_errata_puddle, multiarch_puddle
+    cluster_repo_source: multiarch_puddle # aos_released, aos_puddle, aos_errata_puddle, multiarch_puddle, none
     cluster_registry:
+      none: ''
       aos_released: ''
       aos_puddle: ''
       aos_errata_puddle: "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/openshift3/ose-${component}:${version}"
@@ -42,13 +43,14 @@
       aos_puddle: http://download.eng.bos.redhat.com/rcm-guest/puddles/RHAOS/AtomicOpenShift/{{ cluster_version }}/latest/{{ kvm_snapshot_base_arch }}
       aos_errata_puddle: http://download.eng.bos.redhat.com/rcm-guest/puddles/RHAOS/AtomicOpenShift-errata/{{ cluster_version }}/latest/{{ kvm_snapshot_base_arch }}
       multiarch_puddle: http://download.eng.bos.redhat.com/rcm-guest/puddles/RHAOS-multiarch/AtomicOpenShift-multiarch/{{ cluster_version }}/latest/{{ kvm_snapshot_base_arch }}/os
+    rhaos_repos:
+    - id: rhaos
+      name: rhaos
+      baseurl: "{{ cluster_repo[cluster_repo_source] }}"
+      gpgcheck: 0
+      enabled: 1
     osev3_vars:
-      openshift_additional_repos:
-      - id: rhaos
-        name: rhaos
-        baseurl: "{{ cluster_repo[cluster_repo_source] }}"
-        gpgcheck: 0
-        enabled: 1
+      openshift_additional_repos: "{{ rhaos_repos if cluster_repo[cluster_repo_source] | default(None) else [] }}"
       openshift_deployment_type: "{{ cluster_deployment_type }}"
       openshift_disable_check: disk_availability,docker_image_availability,docker_storage,memory_availability,package_availability,package_version
       openshift_master_identity_providers:

@@ -54,6 +54,14 @@
       path: /usr/bin/docker
     register: docker_stat
 
+  - name: Configure docker storage
+    copy:
+      content: |
+        STORAGE_DRIVER="overlay2"
+        DOCKER_ROOT_VOLUME=yes
+      dest: /etc/sysconfig/docker-storage-setup
+    when: not docker_stat.stat.exists
+
   - yum_repository:
       name: "{{ item.id }}"
       description: "{{ item.name }}"

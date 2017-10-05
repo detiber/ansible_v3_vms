@@ -52,7 +52,7 @@
       --nographics
       --initrd-inject /tmp/ks-base.cfg
       --extra-args="inst.ks=file:/ks-base.cfg ip=dhcp console=tty0 console=ttyS0,115200n8"
-      --wait 30
+      --wait 60
       --noreboot
 
   - name: Modify the base image

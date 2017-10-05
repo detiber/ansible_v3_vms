@@ -9,14 +9,14 @@
     lvcreate -s {{ kvm_snapshot_base_vg }}/{{ kvm_snapshot_base_name }} -n {{ item }}
   when: item not in ansible_lvm.lvs.keys()
   with_items:
-  - "{{ kvm_snapshot_guest_hostnames }}"
+  - "{{ kvm_snapshot_guest_ids }}"
 
 - name: Enable the VM logical volumes
   command: >
     lvchange -ay -K {{ kvm_snapshot_base_vg }}/{{ item }}
   when: item not in ansible_lvm.lvs.keys()
   with_items:
-  - "{{ kvm_snapshot_guest_hostnames }}"
+  - "{{ kvm_snapshot_guest_ids }}"
 
 - name: Create the VMs
   command: >
@@ -31,16 +31,17 @@
     --noreboot
   when: item not in vm_list.list_vms
   with_items:
-  - "{{ kvm_snapshot_guest_hostnames }}"
+  - "{{ kvm_snapshot_guest_ids }}"
 
 - name: Update the VMs
   command: >
-    virt-customize -d {{ item }}
-    --hostname {{ item }}.{{ kvm_snapshot_cluster_domain }}
+    virt-customize -d {{ item.0 }}
+    --hostname {{ item.1 }}.{{ kvm_snapshot_cluster_domain }}
     --ssh-inject root:file:/{{ ansible_user_dir }}/.ssh/id_rsa.pub
     --edit /etc/lvm/lvm.conf:'s/issue_discards = 0/issue_discards = 1/'
-  when: item not in vm_list.list_vms
-  with_items:
+  when: item.0 not in vm_list.list_vms
+  with_together:
+  - "{{ kvm_snapshot_guest_ids }}"
   - "{{ kvm_snapshot_guest_hostnames }}"
 
 - name: Start the VMs
@@ -48,12 +49,12 @@
     name: "{{ item }}"
     state: running
   with_items:
-  - "{{ kvm_snapshot_guest_hostnames }}"
+  - "{{ kvm_snapshot_guest_ids }}"
 
 - name: Wait for hosts to be available
   wait_for: port=22 host={{ item }}.{{ kvm_snapshot_cluster_domain }}
   with_items:
-    - "{{ kvm_snapshot_guest_hostnames }}"
+  - "{{ kvm_snapshot_guest_hostnames }}"
 
 - name: Add hosts to proper groups
   add_host:

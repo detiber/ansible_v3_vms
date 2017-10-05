@@ -10,7 +10,7 @@
     state: destroyed
   when: item in vm_list.list_vms
   with_items:
-  - "{{ kvm_snapshot_guest_hostnames }}"
+  - "{{ kvm_snapshot_guest_ids }}"
 
 - name: Undefine the the VMs
   virt:
@@ -18,7 +18,7 @@
     command: undefine
   when: item in vm_list.list_vms
   with_items:
-  - "{{ kvm_snapshot_guest_hostnames }}"
+  - "{{ kvm_snapshot_guest_ids }}"
 
 - name: Remove the VM logical volumes
   lvol:
@@ -28,4 +28,4 @@
     state: absent
   when: item in ansible_lvm.lvs.keys()
   with_items:
-  - "{{ kvm_snapshot_guest_hostnames }}"
+  - "{{ kvm_snapshot_guest_ids }}"

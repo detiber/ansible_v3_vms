@@ -2,3 +2,4 @@
 kvm_snapshot_guest_vcpus: "{{ 24 if kvm_snapshot_base_arch in ['ppc64le'] else 2 }}"
 kvm_snapshot_guest_ram: "{{ 16384 if kvm_snapshot_base_arch in ['ppc64le'] else 4096 }}"
 kvm_snapshot_guest_hostnames: []
+kvm_snapshot_guest_ids: "{{ kvm_snapshot_guest_hostnames | map('regex_replace', '$', '-' ~ kvm_snapshot_cluster_id) | list }}"
