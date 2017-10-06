@@ -33,9 +33,6 @@
     cluster_version: 3.6
     cluster_repo_source: multiarch_puddle # aos_released, aos_puddle, aos_errata_puddle, multiarch_puddle, none
     cluster_registry:
-      none: ''
-      aos_released: ''
-      aos_puddle: ''
       aos_errata_puddle: "brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888/openshift3/ose-${component}:${version}"
       multiarch_puddle: "docker-registry.engineering.redhat.com/multi-arch/{{ kvm_snapshot_base_arch }}-openshift3-ose-${component}:${version}"
     cluster_repo:
@@ -46,7 +43,7 @@
     rhaos_repos:
     - id: rhaos
       name: rhaos
-      baseurl: "{{ cluster_repo[cluster_repo_source] }}"
+      baseurl: "{{ cluster_repo[cluster_repo_source] | default(None) }}"
       gpgcheck: 0
       enabled: 1
     osev3_vars:
@@ -59,7 +56,7 @@
         challenge: true
         kind: AllowAllPasswordIdentityProvider
       openshift_set_hostname: False
-      oreg_url: "{{ cluster_registry[cluster_repo_source] }}"
+      oreg_url: "{{ cluster_registry[cluster_repo_source] | default('') }}"
       os_firewall_use_firewalld: True
       osn_storage_plugin_deps: []
       openshift_docker_additional_registries: "{{ 'registry.access.redhat.com' if cluster_deployment_type == 'openshift-enterprise' else [] }}"
